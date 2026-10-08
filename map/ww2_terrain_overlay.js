@@ -559,12 +559,12 @@
   box.replaceChildren(...lines.map(t => { const d = document.createElement('div'); d.textContent = t; return d; }));
   box.style.display = lines.length ? '' : 'none';
  }
- map.on('mousemove', ev => {
-  hover.wx = state.wx ? wxText(ev.latlng) : '';
+ function probe(ll) {
+  hover.wx = state.wx ? wxText(ll) : '';
   if (!map.hasLayer(dem)) { hover.dem = ''; return showHover(); }
   showHover();
   const t = ++demHover, z = Math.min(DEM_MAX, Math.max(3, Math.round(map.getZoom()))), n = 1 << z;
-  const lng = wrap180(ev.latlng.lng), lat = Math.max(-85, Math.min(85, ev.latlng.lat));
+  const lng = wrap180(ll.lng), lat = Math.max(-85, Math.min(85, ll.lat));
   const fx = (lng + 180) / 360 * n * 256, fy = (1 - Math.log(Math.tan(Math.PI / 4 + lat * Math.PI / 360)) / Math.PI) / 2 * n * 256;
   const tx = Math.floor(fx / 256), tyy = Math.floor(fy / 256), px = Math.floor(fx) - tx * 256, py = Math.floor(fy) - tyy * 256;
   demTile(z, ((tx % n) + n) % n, tyy).then(e => {
@@ -575,8 +575,16 @@
    hover.dem = h <= 0 ? '🌊 ים' : `⛰️ גובה ${Math.round(h).toLocaleString('he-IL')} מ׳ · שיפוע ${Math.round(Math.atan(g) * 57.2958)}°`;
    showHover();
   });
+ }
+ // a phone has no cursor: a tap on the map (not on a marker) shows the same readout for a few seconds
+ const touchOnly = (() => { try { return matchMedia('(hover: none)').matches; } catch (e) { return false; } })();
+ let probeHide = 0;
+ if (touchOnly) map.on('click', ev => {
+  probe(ev.latlng); clearTimeout(probeHide);
+  probeHide = setTimeout(() => { hover.wx = hover.dem = ''; demHover++; showHover(); }, 7000);
  });
- map.on('mouseout', () => { demInfo.getContainer().style.display = 'none'; });
+ else map.on('mousemove', ev => probe(ev.latlng));
+ map.on('mouseout', () => { if (!touchOnly) demInfo.getContainer().style.display = 'none'; });
 
  // ── rivers (Natural Earth 10m) — strong blue with a light casing, Hebrew names on the big ones ──
  const riverRenderer = L.canvas({ pane: 'ww2Rivers', padding: .3 });
@@ -663,7 +671,7 @@
     '<label><input type="checkbox" data-opt="relief"> ⛰️ הצללת תבליט</label>' +
     '<label><input type="checkbox" data-opt="snow"> ❄️ שלג ביום המוצג (ושלג יורד)</label>' +
     '<div class="snowInfo" aria-live="polite"></div>' +
-    '<label><input type="checkbox" data-opt="wx"> 🌦️ מזג אוויר: גשם יורד, וטמפרטורה ועומק שלג במעבר עכבר</label>' +
+    '<label><input type="checkbox" data-opt="wx"> 🌦️ מזג אוויר: גשם יורד, וטמפרטורה ועומק שלג בנקודה (מעבר עכבר או הקשה)</label>' +
     '<div class="snowInfo wxInfo" aria-live="polite"></div>' +
     '<div class="mix"><div class="ends"><span>צבעי כיבוש</span><span>רקע נקי</span></div>' +
     '<input type="range" min="0" max="100" step="5" data-opt="occ" aria-label="כמה מצבעי הכיבוש מוצגים מעל הרקע"></div>' +
@@ -683,7 +691,7 @@
  const el = ctl.getContainer();
  const notes = {
   normal: 'הרקע המקורי של המפה.',
-  topo: 'תבליט, גוון לפי גובה, קווי גובה עם מספרים וקווקווי תלילות: ככל שהקווקווים צפופים וכהים יותר, המדרון תלול יותר. העבר את העכבר כדי לראות גובה ושיפוע.',
+  topo: 'תבליט, גוון לפי גובה, קווי גובה עם מספרים וקווקווי תלילות: ככל שהקווקווים צפופים וכהים יותר, המדרון תלול יותר. העבר את העכבר (או הקש בטלפון) כדי לראות גובה ושיפוע.',
   real: 'צבעי קרקע אמיתיים מלוויין Sentinel-2. זה צילום של היום — ערים, מאגרים ויערות חדשים לא היו ב־1940; שכבת "יערות ושדות (1940)" מראה את כיסוי הקרקע של אז.',
   photo: 'צילום אוויר מפורט (Esri) לזום קרוב. צילום עכשווי, לא מ־1940.'
  };

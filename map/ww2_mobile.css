@@ -1,0 +1,57 @@
+/* Phone layout for the timeline map (screens up to 700px wide).
+   The map stays full screen; the timeline is a compact bar at the bottom; every tool panel opens as a sheet
+   just above it (search opens at the top, so the on-screen keyboard does not cover it). */
+@media (max-width: 700px) {
+ html, body { overflow: hidden; overscroll-behavior: none; }
+ :root { --tlH: 100px; --sheetBottom: calc(var(--tlH) + 12px + env(safe-area-inset-bottom)); }
+
+ /* timeline: full width, compact, a bigger thumb for fingers */
+ #timebar { left: 6px; right: 6px; width: auto; transform: none; box-sizing: border-box;
+  bottom: calc(6px + env(safe-area-inset-bottom)); padding: 6px 10px 4px; }
+ #tbTop { gap: 8px; margin-bottom: 2px; }
+ #play { width: 44px; height: 36px; flex: none; }
+ #dateLbl { min-width: 0; font-size: 15px; white-space: nowrap; }
+ #seasonLbl { min-width: 0; }
+ #tempo { display: none; }
+ #speed { padding: 5px 6px; }
+ #sliderWrap { height: 52px; }
+ #ticks { height: 30px; }
+ #ticks b { display: none; }                      /* event names do not fit; the marks stay */
+ #timebar input[type=range] { height: 32px; bottom: 10px; }
+ #timebar input[type=range]::-webkit-slider-thumb { width: 24px; height: 24px; margin-top: -10.5px; }
+ #timebar input[type=range]::-moz-range-thumb { width: 22px; height: 22px; }
+
+ /* tools menu: larger touch targets */
+ #mapTools { top: 10px; right: 8px; padding: 10px 13px; }
+ #mapToolsMenu { top: 56px; right: 8px; min-width: 180px; }
+ #mapToolsMenu button { padding: 11px 12px; font-size: 14px; }
+
+ /* panels → bottom sheet over the map, above the timeline */
+ #feed, #legend, #ww2Enrich, #militaryPanel, #live-scene {
+  top: auto !important; left: 6px !important; right: 6px !important; bottom: var(--sheetBottom) !important;
+  width: auto !important; max-width: none !important; max-height: 44vh !important; overflow: auto !important;
+  box-sizing: border-box; font-size: 13px; }
+ #legend .row { line-height: 2.3; }               /* rows are tap targets */
+ #views { top: 58px; left: 6px; right: 6px; bottom: auto; overflow-x: auto; flex-wrap: nowrap;
+  -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+ #views button { padding: 8px 11px; }
+ #search { top: 58px; left: 6px; right: 6px; width: auto; box-sizing: border-box; }
+ #search input { font-size: 16px; }               /* 16px stops iOS from zooming the page on focus */
+ #qres { max-height: 38vh; }
+ #clean { bottom: var(--sheetBottom); left: 8px; }
+
+ /* Leaflet: left-hand buttons smaller, scale/attribution lifted above the timeline */
+ .leaflet-top.leaflet-left .leaflet-control { margin-left: 8px; margin-top: 8px; }
+ .ww2ShipBtn { display: none !important; }        /* also in the tools menu */
+ body.ww2Popup .leaflet-top.leaflet-left { opacity: 0; pointer-events: none; }   /* an open card gets the whole width */
+ .leaflet-bottom { bottom: calc(var(--tlH) + 8px + env(safe-area-inset-bottom)); }
+ .leaflet-control-attribution { font-size: 9px; max-width: 70vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+ .ww2Terrain .body { max-height: calc(100vh - 260px); overflow: auto; }
+ .ww2DemInfo { margin-top: 56px !important; margin-right: 8px !important; max-width: calc(100vw - 90px); white-space: normal; }
+
+ /* popups and cards fit the screen */
+ .leaflet-popup-content { max-width: calc(100vw - 64px) !important; overflow-wrap: anywhere; }
+ .leaflet-popup-content .ec { min-width: 0; max-width: none; }
+ .ww2-supply-context, .ww2-factory-list { max-width: 100%; }
+ .leaflet-popup-close-button { width: 32px !important; height: 32px !important; font-size: 24px !important; line-height: 30px !important; }
+}
