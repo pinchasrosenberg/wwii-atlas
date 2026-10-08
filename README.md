@@ -10,7 +10,7 @@ through a hardened read-only API.**
 ![Neo4j](https://img.shields.io/badge/Neo4j-Aura-008CC1?logo=neo4j&logoColor=white)
 ![Cloudflare Workers](https://img.shields.io/badge/API-Cloudflare%20Workers-F38020?logo=cloudflare&logoColor=white)
 ![Python](https://img.shields.io/badge/ETL-Python-3776AB?logo=python&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-passing-success)
+[![CI](https://github.com/pinchasrosenberg/wwii-atlas/actions/workflows/ci.yml/badge.svg)](https://github.com/pinchasrosenberg/wwii-atlas/actions/workflows/ci.yml)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 <img src="map/og-supply-network.png" alt="The atlas: borders, supply network and battles on a shared timeline" width="900">
