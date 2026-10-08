@@ -171,3 +171,37 @@ test('responses carry hardening headers', async () => {
   assert.match(res.headers.get('Content-Security-Policy'), /default-src 'none'/);
   assert.equal(res.headers.get('X-Content-Type-Options'), 'nosniff');
 });
+
+test('ship card endpoint: validated input, parameters only, card-shaped rows', async () => {
+  const calls = fakeGraph(() => ({ fields: ['builders', 'city', 'label', 'wiki', 'vs', 'attacker'],
+                                   values: [[['Blohm & Voss'], ['Hamburg'], 'Type VIIC', 'https://en.wikipedia.org/wiki/U-47', 'sourced', []]] }));
+  const res = await call('/ship?n=U-47&d=1941-03-07');
+  assert.equal(res.status, 200);
+  const body = await res.json();
+  assert.deepEqual(body.rows[0][0], ['Blohm & Voss']);
+  assert.equal(calls[0].body.parameters.n, 'U-47');
+  assert.doesNotMatch(calls[0].body.statement, /U-47/);
+  assert.equal((await call('/ship?n=U-47&d=yesterday')).status, 400);
+  assert.equal((await call('/ship?d=1941-03-07')).status, 400);
+});
+
+test('wiki endpoint: exact page by name, never anything but a Wikipedia/Wikidata URL', async () => {
+  const calls = fakeGraph(() => ({ fields: ['title', 'qid', 'nation'], values: [['6th Army (Wehrmacht)', 'Q151208', null]] }));
+  const res = await call('/wiki?kind=unit&name=6th%20Army&nation=Germany');
+  assert.deepEqual(await res.json(), { ok: true, url: 'https://en.wikipedia.org/wiki/6th_Army_(Wehrmacht)' });
+  assert.equal(calls[0].body.parameters.name, '6th Army');
+  // a Soviet "6th Army" card must never link to the Wehrmacht page, and an unknown country never guesses
+  assert.deepEqual(await (await call('/wiki?kind=unit&name=6th%20Army&nation=Soviet%20Union')).json(), { ok: true, url: null });
+  assert.deepEqual(await (await call('/wiki?kind=unit&name=6th%20Army')).json(), { ok: true, url: null });
+  const { pickUnitPage } = await import('../src/index.js');
+  assert.equal(pickUnitPage([{ title: '5th Tank Army', qid: null, nation: 'Soviet Union' }], 'Soviet Union'), 'https://en.wikipedia.org/wiki/5th_Tank_Army');
+  assert.equal(pickUnitPage([{ title: '5th Tank Army', qid: null, nation: null }], 'Soviet Union'), null);
+  assert.equal(pickUnitPage([{ title: 'XX Corps (United Kingdom)' }, { title: 'XX Corps (United States)' }], 'United States'),
+               'https://en.wikipedia.org/wiki/XX_Corps_(United_States)');
+  assert.equal((await call('/wiki?kind=admin&name=x')).status, 400);
+  const { wikiUrl } = await import('../src/index.js');
+  assert.equal(wikiUrl({ title: null, qid: 'Q42' }), 'https://www.wikidata.org/wiki/Special:GoToLinkedPage/enwiki/Q42');
+  assert.equal(wikiUrl({ title: null, qid: 'javascript:alert(1)' }), null);
+  assert.equal(wikiUrl({ title: '"><script>', qid: null }), 'https://en.wikipedia.org/wiki/%22%3E%3Cscript%3E');
+  assert.equal(wikiUrl(undefined), null);
+});

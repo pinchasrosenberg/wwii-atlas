@@ -20,13 +20,12 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
-      - name: Python deps for the normaliser parity test and the loader test
-        run: pip install rapidfuzz unidecode neo4j
+      - name: Python deps for the loader test
+        run: pip install neo4j
       - name: API tests
         working-directory: api
         run: npm test
-      - name: Map tests
-        working-directory: map
-        run: npm test
+      - name: Map site checks (scripts parse, CSP, SRI, no local references)
+        run: node map/tools/check-site.mjs
       - name: Graph loader safety tests
         run: python -m unittest graph/test_load_snapshot.py

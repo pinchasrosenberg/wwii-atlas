@@ -73,6 +73,8 @@ const ROUTES = [
   { method: 'GET', pattern: /^\/battle\/([0-9a-f]{16})$/, handler: battle },
   { method: 'GET', pattern: /^\/entity\/([0-9a-f]{16})$/, handler: entity },
   { method: 'GET', pattern: /^\/search$/, handler: search, query: ['q', 'limit'] },
+  { method: 'GET', pattern: /^\/ship$/, handler: ship, query: ['n', 'd'] },
+  { method: 'GET', pattern: /^\/wiki$/, handler: wiki, query: ['kind', 'name', 'nation'] },
   { method: 'GET', pattern: /^\/delivers$/, handler: delivers },
   { method: 'GET', pattern: /^\/delivers\/([A-Za-z0-9:_.-]{1,120})$/, handler: deliver },
   { method: 'GET', pattern: /^\/map\/(battles|places|maritime|infrastructure)$/, handler: mapLayer },
@@ -160,6 +162,87 @@ async function search({ env, url }) {
            coalesce(node.name, node.title, node.vessel_name, node.label) AS name, score`,
     { q: luceneEscape(q), limit });
   return json({ ok: true, results: rows });
+}
+
+// Ship-loss card details for the timeline map (builder, yard city, attacker, Wikipedia link).
+// Rows keep the [builders, city, label, wiki, vs, attacker] shape the map's card code reads.
+async function ship({ env, url }) {
+  const n = text(url.searchParams.get('n'), 120);
+  const d = isoDate(url.searchParams.get('d'), null);
+  if (!n || !d) throw new BadRequest('n and d are required');
+  const { values } = await runRaw(env, `
+    MATCH (s:Sinking) WHERE toLower(s.vessel_name) = toLower($n) AND s.sunk_date = $d
+    OPTIONAL MATCH (s)-[:LOSS_OF_VESSEL]->(v:VesselInstance)
+    OPTIONAL MATCH (v)-[:BUILT_BY]->(m:Manufacturer)
+    OPTIONAL MATCH (s)-[:ATTACKED_BY]->(a)
+    WITH s, v, m, a LIMIT 50
+    RETURN collect(DISTINCT m.name)[0..3] AS builders, collect(DISTINCT m.city)[0..3] AS city,
+           head(collect(v.label)) AS label,
+           head([u IN collect(v.wikipedia_url) WHERE u STARTS WITH 'https://']) AS wiki,
+           head(collect(s.validation_status)) AS vs, collect(DISTINCT a.name)[0..3] AS attacker`,
+    { n, d }, DEFAULT_TIMEOUT_S);
+  return json({ ok: true, rows: values.filter((row) => row.some((v) => v && (!Array.isArray(v) || v.length))) });
+}
+
+// Exact Wikipedia page of a battle or unit, by the name shown on the map. Unit names repeat across armies
+// ("4th Army" exists for several countries), so a unit link is returned only when its country is certain:
+// the page's own disambiguator ("… (Wehrmacht)") or the graph's nation must agree with the card's nation.
+// Anything uncertain returns null and the map falls back to a Wikipedia search.
+const WIKI_QUERIES = {
+  battle: `MATCH (n:Battle) WHERE toLower(n.name) = toLower($name) OR toLower(n.name_he) = toLower($name)
+             OR toLower(n.wiki_title) = toLower($name)`,
+  unit: `MATCH (n:Unit) WHERE toLower(n.name) = toLower($name) OR toLower(n.name_clean) = toLower($name)
+           OR toLower(n.wiki_title) = toLower($name)`,
+};
+const NATION_WORDS = {
+  'Germany': ['wehrmacht', 'germany', 'german', 'waffen-ss', 'luftwaffe', 'kriegsmarine', 'heer'],
+  'Soviet Union': ['soviet union', 'soviet', 'ussr', 'red army'],
+  'United States': ['united states', 'u.s.', 'us army', 'american'],
+  'United Kingdom': ['united kingdom', 'british', 'british army', 'uk'],
+  'Japan': ['japan', 'japanese', 'imperial japanese army'],
+  'Italy': ['italy', 'italian'], 'France': ['france', 'french'], 'Canada': ['canada', 'canadian'],
+  'Poland': ['poland', 'polish'], 'Romania': ['romania', 'romanian'], 'Hungary': ['hungary', 'hungarian'],
+  'Finland': ['finland', 'finnish'], 'Australia': ['australia', 'australian'], 'New Zealand': ['new zealand'],
+  'Greece': ['greece', 'greek'], 'China': ['china', 'chinese'], 'India': ['india', 'indian'],
+  'Bulgaria': ['bulgaria', 'bulgarian'], 'Yugoslavia': ['yugoslavia', 'yugoslav'], 'Slovakia': ['slovakia', 'slovak'],
+  'Netherlands': ['netherlands', 'dutch'], 'Belgium': ['belgium', 'belgian'], 'Norway': ['norway', 'norwegian'],
+  'South Africa': ['south africa', 'south african'],
+};
+
+export function pickUnitPage(candidates, nation) {
+  const words = NATION_WORDS[nation];
+  const fits = candidates.filter((c) => {
+    const tag = /\(([^)]+)\)\s*$/.exec(c.title || '')?.[1]?.toLowerCase();
+    if (!words) return false;                                 // country unknown: never guess a unit page
+    if (tag) return words.some((w) => tag.includes(w));       // the page names its army
+    return c.nation === nation;                               // otherwise the graph must know the country
+  });
+  const pages = [...new Set(fits.map((c) => wikiUrl(c)).filter(Boolean))];
+  return pages.length === 1 ? pages[0] : null;
+}
+
+async function wiki({ env, url }) {
+  const kind = url.searchParams.get('kind');
+  const name = text(url.searchParams.get('name'), 160);
+  const nation = text(url.searchParams.get('nation'), 40);
+  if (!WIKI_QUERIES[kind] || !name) throw new BadRequest('kind (battle|unit) and name are required');
+  const rows = await run(env, `${WIKI_QUERIES[kind]}
+    WITH n WHERE n.wiki_title IS NOT NULL OR n.wikidata_qid IS NOT NULL
+    RETURN n.wiki_title AS title, n.wikidata_qid AS qid, n.nation AS nation LIMIT 20`, { name });
+  if (kind === 'unit') return json({ ok: true, url: pickUnitPage(rows, nation) });
+  const pages = [...new Set(rows.map((r) => wikiUrl(r)).filter(Boolean))];
+  return json({ ok: true, url: pages.length === 1 ? pages[0] : null });
+}
+
+export function wikiUrl(row) {
+  if (!row) return null;
+  if (typeof row.title === 'string' && row.title.trim()) {
+    return 'https://en.wikipedia.org/wiki/' + encodeURIComponent(row.title.trim().replace(/ /g, '_'));
+  }
+  if (typeof row.qid === 'string' && /^Q\d+$/.test(row.qid)) {
+    return 'https://www.wikidata.org/wiki/Special:GoToLinkedPage/enwiki/' + row.qid;
+  }
+  return null;
 }
 
 async function delivers({ env }) {

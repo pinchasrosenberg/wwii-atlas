@@ -9,8 +9,8 @@ main = "src/index.js"
 compatibility_date = "2026-10-01"
 
 [vars]
-# Comma-separated list of origins allowed to call the API from a browser.
-ALLOWED_ORIGINS = "https://pinchasrosenberg.github.io"
+# Comma-separated list of origins allowed to call the API from a browser (the site, plus a local preview port).
+ALLOWED_ORIGINS = "https://pinchasrosenberg.github.io,http://127.0.0.1:8411,http://localhost:8411"
 
 [[ratelimits]]
 name = "RATE_LIMITER"

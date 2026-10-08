@@ -13,6 +13,8 @@ this Worker over HTTPS. The Worker talks to Neo4j through its Query API, with cr
 | `GET /battle/{id}` | one battle with its facts, casualties, units and commanders |
 | `GET /entity/{id}` | any node with up to 100 neighbours |
 | `GET /search?q=` | full-text search over names |
+| `GET /ship?n=&d=` | ship-loss card details for the map: builder, yard city, attacker, Wikipedia link (https only) |
+| `GET /wiki?kind=battle\|unit&name=&nation=` | exact Wikipedia page; for units only when the country is certain, otherwise `null` |
 | `GET /delivers`, `GET /delivers/{driver_id}` | the Delivers catalog, versions and listeners |
 | `GET /map/{battles\|places\|maritime\|infrastructure}` | map layer payloads (graph envelope passed through, edge-cached for 24 h) |
 | `POST /pipeline/query` `{question}` | Graph-RAG retrieval: ranked facts plus the entities they mention |
@@ -44,7 +46,7 @@ Generate the console key with `openssl rand -hex 32`.
 ```bash
 npm install
 npx wrangler login
-npx wrangler secret put NEO4J_QUERY_URL     # https://<id>.databases.neo4j.io/db/neo4j/query/v2
+npx wrangler secret put NEO4J_QUERY_URL     # https://<id>.databases.neo4j.io/db/<database>/query/v2 (Aura: the instance id)
 npx wrangler secret put NEO4J_USER
 npx wrangler secret put NEO4J_PASSWORD
 npx wrangler secret put CONSOLE_KEY         # optional
