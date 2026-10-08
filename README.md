@@ -40,7 +40,9 @@ Layers include:
 * **industry**: plants from the US Strategic Bombing Survey and the Soviet defence-industry guide;
 * **the persecution**: 1,878 camps and ghettos (USHMM/HGC), deportation trains on the real rail network, and
   741 cities with their Jewish communities;
-* **terrain and seasons**: relief, snow cover by year, rivers, wetlands and 1940 vegetation.
+* **terrain and seasons**: relief, daily snow cover, rivers, wetlands and peat bogs, and 1940 vegetation;
+* **daily weather** from the ERA5 reanalysis (1940–1945): rain falls on the map wherever it rained that day, and
+  hovering shows the day's mean temperature, rainfall and estimated snow depth at that spot.
 
 Every **battle and unit card links to its Wikipedia page**. Battles are linked exactly through Wikidata. Units are
 linked exactly when the public graph knows the unit and its country, so a Soviet "6th Army" never links to the
@@ -95,7 +97,7 @@ Leaflet is pinned with Subresource Integrity. Links open with `noopener`, and Wi
 
 ## Sources and licensing
 
-Wikipedia-derived facts are CC BY-SA, and Wikidata is CC0. U.S. government works (USSBS, THOR, Army CMH,
+Wikipedia-derived facts are CC BY-SA, and Wikidata is CC0. Weather and snow come from ERA5 (Copernicus Climate Change Service / ECMWF; contains modified Copernicus information). U.S. government works (USSBS, THOR, Army CMH,
 HyperWar, NHHC, JANAC) are in the public domain. CShapes 2.0 is CC BY-NC-SA 4.0. Basemaps are © OpenStreetMap,
 CARTO and Esri, and relief tiles are Mapzen Terrarium on AWS. Camp and ghetto data follow the USHMM Encyclopedia
 of Camps and Ghettos. Military icons are by [Icons8](https://icons8.com) (see `map/assets/military-icons/ATTRIBUTION.md`).

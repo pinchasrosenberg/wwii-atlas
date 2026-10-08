@@ -1,7 +1,8 @@
 /* Terrain & landscape for the timeline map (v2, 2026-09-24).
    Base modes swap only the base tiles; "רגיל" keeps the original CARTO base.
    Landscape layers: rivers (always available, on by default), wetlands (GLWD v2), 1940 vegetation (LUH2),
-   daily snow (ERA5, lazy-loaded per year) and hill shading.
+   daily snow (ERA5, lazy-loaded per year), daily weather (ERA5: falling rain, and temperature / snow depth under
+   the cursor; lazy-loaded per month) and hill shading.
    One slider sets how much of the occupation colouring shows over the ground. */
 (() => {
  'use strict';
@@ -255,6 +256,116 @@
  });
  const snowFall = new SnowFall();
 
+ // ── weather: ERA5 daily mean temperature, precipitation and snow depth, one PNG per month (see tools/build_weather.py) ──
+ // R = °C + 60, G = snow depth cm (estimate), B = precipitation mm; rain = precipitation on a day above +0.5 °C
+ let WX = null, wxGrid = null, wxDayShown = null;
+ const wxMonths = new Map();
+ const wxMeta = fetch('./weather/meta.json').then(r => r.ok ? r.json() : null).then(m => (WX = m)).catch(() => null);
+ const dateOf = d => new Date(Date.UTC(1937, 0, 1) + d * 864e5);
+ function loadWxMonth(ym) {
+  if (!wxMonths.has(ym)) {
+   wxMonths.set(ym, fetch(`./weather/wx_${ym}.png`).then(r => r.ok ? r.blob() : null)
+    .then(b => b && createImageBitmap(b, { colorSpaceConversion: 'none', premultiplyAlpha: 'none' }))
+    .then(bmp => {
+     if (!bmp) return null;
+     const c = document.createElement('canvas'); c.width = bmp.width; c.height = bmp.height;
+     const ctx = c.getContext('2d', { willReadFrequently: true }); ctx.drawImage(bmp, 0, 0);
+     return ctx.getImageData(0, 0, c.width, c.height).data;
+    }).catch(() => null));
+   if (wxMonths.size > 4) wxMonths.delete(wxMonths.keys().next().value);
+  }
+  return wxMonths.get(ym);
+ }
+ // the day's grid: { px (RGBA bytes of the whole month), off (first byte of the day) }
+ async function wxForDay(d) {
+  const m = await wxMeta; if (!m || !Number.isFinite(d)) return null;
+  const t = dateOf(d), ym = t.getUTCFullYear() + String(t.getUTCMonth() + 1).padStart(2, '0');
+  if (!m.months[ym]) return null;
+  const px = await loadWxMonth(ym); if (!px) return null;
+  return { px, off: (t.getUTCDate() - 1) * m.ny * m.nx * 4, d };
+ }
+ // bilinear value of one channel (0 R, 1 G, 2 B) at a point; null outside the grid
+ function wxAt(g, ch, lon, lat) {
+  const fy = (WX.lat0 - lat) / WX.step, fx = (lon - WX.lon0) / WX.step;
+  if (!g || fx < -.5 || fy < -.5 || fx > WX.nx - .5 || fy > WX.ny - .5) return null;
+  const cx = Math.max(0, Math.min(WX.nx - 1, fx)), cy = Math.max(0, Math.min(WX.ny - 1, fy));
+  const x0 = cx | 0, y0 = cy | 0, tx = cx - x0, ty = cy - y0, x1 = Math.min(x0 + 1, WX.nx - 1), y1 = Math.min(y0 + 1, WX.ny - 1);
+  const v = (x, y) => g.px[g.off + (y * WX.nx + x) * 4 + ch];
+  return (v(x0, y0) * (1 - tx) + v(x1, y0) * tx) * (1 - ty) + (v(x0, y1) * (1 - tx) + v(x1, y1) * tx) * ty;
+ }
+ const rainLevel = (mm, c) => c <= .5 || mm < 1 ? 0 : mm < 5 ? 1 : mm < 15 ? 2 : 3;
+ function wxText(ll) {
+  if (!WX || !wxGrid) return '';
+  const lon = wrap180(ll.lng), lat = ll.lat, T = wxAt(wxGrid, 0, lon, lat);
+  if (T === null) return '';
+  const c = T - 60, mm = wxAt(wxGrid, 2, lon, lat), cm = wxAt(wxGrid, 1, lon, lat), parts = [`🌡️ ${Math.round(c)}° (ממוצע יומי)`];
+  if (mm >= 1) parts.push(c > .5 ? `🌧️ ${Math.round(mm)} מ״מ גשם` : `🌨️ ${Math.round(mm)} מ״מ משקעים (שלג)`);
+  if (cm >= 1) parts.push(`❄️ עומק שלג כ־${cm < 50 ? Math.round(cm) : Math.round(cm / 5) * 5}${cm >= 254 ? '+' : ''} ס״מ (הערכה)`);
+  return parts.join(' · ');
+ }
+
+ // ── falling rain: animated streaks where that day's precipitation fell as rain, denser where it rained harder ──
+ pane('ww2RainFall', 426);
+ const RainFall = L.Layer.extend({
+  onAdd(m) {
+   this._c = L.DomUtil.create('canvas', 'leaflet-zoom-hide'); this._c.style.position = 'absolute'; this._c.style.pointerEvents = 'none';
+   m.getPane('ww2RainFall').appendChild(this._c); this._p = []; this._mask = null;
+   m.on('moveend zoomend resize viewreset', this._onView, this); m.on('zoomstart', this._clear, this); this._reset();
+  },
+  _onView() { this._reset(); },
+  onRemove(m) { m.off('moveend zoomend resize viewreset', this._onView, this); m.off('zoomstart', this._clear, this); this._stop(); L.DomUtil.remove(this._c); },
+  setGrid(g) { this._grid = g; if (this._map) this._reset(); },
+  _clear() { this._stop(); const c = this._c; c.getContext('2d').clearRect(0, 0, c.width, c.height); },
+  _reset() {
+   const m = this._map, size = m.getSize(), c = this._c, CELL = 22;
+   L.DomUtil.setPosition(c, m.containerPointToLayerPoint([0, 0]));
+   if (c.width !== size.x || c.height !== size.y) { c.width = size.x; c.height = size.y; }
+   const cols = Math.ceil(size.x / CELL), rows = Math.ceil(size.y / CELL), mask = new Uint8Array(cols * rows), act = [];
+   let wet = 0;
+   if (this._grid && WX) for (let r = 0; r < rows; r++) for (let q = 0; q < cols; q++) {
+    const ll = m.containerPointToLatLng([(q + .5) * CELL, (r + .5) * CELL]), lon = wrap180(ll.lng);
+    const T = wxAt(this._grid, 0, lon, ll.lat); if (T === null) continue;
+    const lv = rainLevel(wxAt(this._grid, 2, lon, ll.lat), T - 60);
+    if (lv) { mask[r * cols + q] = lv; wet++; for (let k = 0; k < lv * lv; k++) act.push(r * cols + q); }   // heavier rain → more drops
+   }
+   this._mask = { mask, cols, rows, CELL, act };
+   const want = Math.min(1100, Math.round(act.length * .9));
+   this._p = [];
+   while (act.length && this._p.length < want) this._p.push(this._spawn(true));
+   if (act.length && !reduceMotion) this._start(); else this._clear();
+   if (this._onCount) this._onCount(wet);
+  },
+  _spawn(anywhere) {
+   const M = this._mask, cell = M.act[(Math.random() * M.act.length) | 0], q = cell % M.cols, r = (cell / M.cols) | 0, lv = M.mask[cell];
+   return { x: (q + Math.random()) * M.CELL, y: (r + (anywhere ? Math.random() : Math.random() * .4)) * M.CELL,
+    len: 6 + lv * 2.5 + Math.random() * 5, v: 5 + lv + Math.random() * 3, life: 0, max: 5 + Math.random() * 6, lv };
+  },
+  _start() { if (this._raf) return; let last = performance.now();
+   const tick = t => { this._raf = requestAnimationFrame(tick); const dt = Math.min(3, (t - last) / 16.7); last = t; this._frame(dt); };
+   this._raf = requestAnimationFrame(tick); },
+  _stop() { if (this._raf) cancelAnimationFrame(this._raf); this._raf = 0; },
+  _frame(dt) {
+   const M = this._mask, c = this._c, ctx = c.getContext('2d'); if (!M || !M.act.length) return this._clear();
+   ctx.clearRect(0, 0, c.width, c.height); ctx.lineCap = 'round';
+   const SLANT = .22;                                                // a little wind: streaks lean to the left as they fall
+   for (const pass of [0, 1]) {                                      // light casing first, then the blue streaks
+    ctx.beginPath();
+    ctx.strokeStyle = pass ? 'rgba(38,84,150,.62)' : 'rgba(255,255,255,.45)'; ctx.lineWidth = pass ? 1.15 : 2.6;
+    for (let i = 0; i < this._p.length; i++) {
+     const p = this._p[i];
+     if (!pass) {
+      p.y += p.v * dt; p.x -= p.v * SLANT * dt; p.life += dt;
+      const q = Math.floor(p.x / M.CELL), r = Math.floor(p.y / M.CELL);
+      if (p.life > p.max || q < 0 || r < 0 || q >= M.cols || r >= M.rows || !M.mask[r * M.cols + q]) { this._p[i] = this._spawn(false); continue; }
+     }
+     ctx.moveTo(p.x, p.y); ctx.lineTo(p.x + p.len * SLANT, p.y - p.len);
+    }
+    ctx.stroke();
+   }
+  }
+ });
+ const rainFall = new RainFall();
+
  // ── wetlands (GLWD v2 share per 1/30°) — drawn with a marsh symbol, like on a paper map ──
  let wet = null;
  const marsh = (() => {
@@ -442,8 +553,16 @@
   const d = L.DomUtil.create('div', 'ww2DemInfo leaflet-control'); d.style.display = 'none'; return d; } });
  const demInfo = new DemInfo(); demInfo.addTo(map);
  let demHover = 0;
+ const hover = { wx: '', dem: '' };
+ function showHover() {
+  const box = demInfo.getContainer(), lines = [hover.wx, hover.dem].filter(Boolean);
+  box.replaceChildren(...lines.map(t => { const d = document.createElement('div'); d.textContent = t; return d; }));
+  box.style.display = lines.length ? '' : 'none';
+ }
  map.on('mousemove', ev => {
-  if (!map.hasLayer(dem)) return;
+  hover.wx = state.wx ? wxText(ev.latlng) : '';
+  if (!map.hasLayer(dem)) { hover.dem = ''; return showHover(); }
+  showHover();
   const t = ++demHover, z = Math.min(DEM_MAX, Math.max(3, Math.round(map.getZoom()))), n = 1 << z;
   const lng = wrap180(ev.latlng.lng), lat = Math.max(-85, Math.min(85, ev.latlng.lat));
   const fx = (lng + 180) / 360 * n * 256, fy = (1 - Math.log(Math.tan(Math.PI / 4 + lat * Math.PI / 360)) / Math.PI) / 2 * n * 256;
@@ -453,9 +572,8 @@
    const at = (x, y) => e[Math.min(255, Math.max(0, y)) * 256 + Math.min(255, Math.max(0, x))];
    const h = at(px, py), m = 40075016.686 * Math.cos(lat * Math.PI / 180) / (n * 256);
    const g = Math.hypot((at(px + 1, py) - at(px - 1, py)) / (2 * m), (at(px, py + 1) - at(px, py - 1)) / (2 * m));
-   const box = demInfo.getContainer();
-   box.textContent = h <= 0 ? '🌊 ים' : `⛰️ גובה ${Math.round(h).toLocaleString('he-IL')} מ׳ · שיפוע ${Math.round(Math.atan(g) * 57.2958)}°`;
-   box.style.display = '';
+   hover.dem = h <= 0 ? '🌊 ים' : `⛰️ גובה ${Math.round(h).toLocaleString('he-IL')} מ׳ · שיפוע ${Math.round(Math.atan(g) * 57.2958)}°`;
+   showHover();
   });
  });
  map.on('mouseout', () => { demInfo.getContainer().style.display = 'none'; });
@@ -501,10 +619,10 @@
   mode: store.get('ww2.terrain.mode', 'topo'),     // default view: topographic relief with live snow cover
   relief: store.get('ww2.terrain.relief', '1') === '1',
   rivers: store.get('ww2.terrain.rivers', '1') === '1',
-  wet: null, veg: null, snow: null, dem: null, occ: null
+  wet: null, veg: null, snow: null, dem: null, wx: null, occ: null
  };
- const optDefault = (k, m) => ({ wet: m !== 'normal', veg: m !== 'normal' && m !== 'photo', snow: m !== 'normal', dem: m === 'topo' }[k]);
- for (const k of ['wet', 'veg', 'snow', 'dem']) { const v = store.get('ww2.terrain.' + k, null); state[k] = v === null ? optDefault(k, state.mode) : v === '1'; }
+ const optDefault = (k, m) => ({ wet: m !== 'normal', veg: m !== 'normal' && m !== 'photo', snow: m !== 'normal', dem: m === 'topo', wx: true }[k]);
+ for (const k of ['wet', 'veg', 'snow', 'dem', 'wx']) { const v = store.get('ww2.terrain.' + k, null); state[k] = v === null ? optDefault(k, state.mode) : v === '1'; }
  { const v = store.get('ww2.terrain.occ.' + (state.mode === 'normal' ? 'n' : 't'), null); state.occ = v === null ? (state.mode === 'normal' ? 100 : 80) : +v; }
 
  const css = document.createElement('style');
@@ -545,6 +663,8 @@
     '<label><input type="checkbox" data-opt="relief"> ⛰️ הצללת תבליט</label>' +
     '<label><input type="checkbox" data-opt="snow"> ❄️ שלג ביום המוצג (ושלג יורד)</label>' +
     '<div class="snowInfo" aria-live="polite"></div>' +
+    '<label><input type="checkbox" data-opt="wx"> 🌦️ מזג אוויר: גשם יורד, וטמפרטורה ועומק שלג במעבר עכבר</label>' +
+    '<div class="snowInfo wxInfo" aria-live="polite"></div>' +
     '<div class="mix"><div class="ends"><span>צבעי כיבוש</span><span>רקע נקי</span></div>' +
     '<input type="range" min="0" max="100" step="5" data-opt="occ" aria-label="כמה מצבעי הכיבוש מוצגים מעל הרקע"></div>' +
     '<div class="note"></div></div>';
@@ -666,6 +786,19 @@
   snowFall._onCount = n => { info.textContent = n ? base + ' · ❄ שלג יורד באזורים המונפשים' : base; };
   snowFall.setGrid(fall);
  }
+ async function updateWeather(force) {
+  const info = el.querySelector('.wxInfo'), d = currentDay();
+  if (!state.wx) { info.textContent = ''; wxGrid = null; wxDayShown = null; toggle(rainFall, false); return; }
+  if (d === wxDayShown && !force) return;
+  const g = await wxForDay(d);
+  if (currentDay() !== d || !state.wx) return;                      // the timeline moved on while loading
+  wxDayShown = d; wxGrid = g;
+  if (!g) { info.textContent = WX ? 'אין נתוני מזג אוויר לתאריך הזה (הנתונים מכסים 1940–1945).' : 'נתוני מזג האוויר לא נטענו.'; toggle(rainFall, false); return; }
+  const base = 'מזג אוויר ב־' + fmt(d) + ' לפי ERA5 · אין נתוני עננות';
+  info.textContent = base;
+  rainFall._onCount = n => { info.textContent = n ? base + ' · 🌧️ יורד גשם באזורים המונפשים' : base; };
+  toggle(rainFall, true); rainFall.setGrid(g);
+ }
  let loading = null;
  function ensureData() {
   if (loading) return loading;
@@ -689,29 +822,30 @@
   toggle(relief, state.relief && m !== 'normal');
   const ov = map.getPane('overlayPane'); ov.style.mixBlendMode = m === 'normal' ? '' : 'multiply'; ov.style.opacity = '';
   el.querySelectorAll('[data-mode]').forEach(b => { b.classList.toggle('on', b.dataset.mode === m); b.setAttribute('aria-pressed', String(b.dataset.mode === m)); });
-  for (const k of ['rivers', 'wet', 'veg', 'relief', 'snow', 'dem']) { const c = el.querySelector(`[data-opt="${k}"]`); if (c) c.checked = !!state[k]; }
+  for (const k of ['rivers', 'wet', 'veg', 'relief', 'snow', 'dem', 'wx']) { const c = el.querySelector(`[data-opt="${k}"]`); if (c) c.checked = !!state[k]; }
   el.querySelector('[data-opt="relief"]').disabled = m === 'normal';
   el.querySelector('.note').textContent = notes[m];
   await ensureData();
   toggle(rivers, state.rivers); toggle(riverLabels, state.rivers); if (state.rivers) drawRivers(true);
   toggle(wetlands, state.wet && !!wet); toggle(vegetation, state.veg && !!veg); toggle(snow, state.snow && !!S);
-  toggle(dem, !!state.dem); if (!state.dem) demInfo.getContainer().style.display = 'none';
-  applyOcc(); updateSnow(true);
+  toggle(dem, !!state.dem); hover.dem = ''; hover.wx = ''; showHover();
+  applyOcc(); updateSnow(true); updateWeather(true);
  }
  function setMode(m) {
   if (!modes.some(([k]) => k === m)) m = 'normal';
   state.mode = m; store.set('ww2.terrain.mode', m);
-  for (const k of ['wet', 'veg', 'snow', 'dem']) if (store.get('ww2.terrain.' + k, null) === null) state[k] = optDefault(k, m);
+  for (const k of ['wet', 'veg', 'snow', 'dem', 'wx']) if (store.get('ww2.terrain.' + k, null) === null) state[k] = optDefault(k, m);
   const v = store.get('ww2.terrain.occ.' + (m === 'normal' ? 'n' : 't'), null); state.occ = v === null ? (m === 'normal' ? 100 : 80) : +v;
   apply();
  }
  apply();
 
  const slider = document.querySelector('#slider');
- if (slider) { slider.addEventListener('input', () => updateSnow()); slider.addEventListener('change', () => updateSnow()); }
- document.addEventListener('ww2:daychange', () => updateSnow());
+ const onDay = () => { updateSnow(); updateWeather(); };
+ if (slider) { slider.addEventListener('input', onDay); slider.addEventListener('change', onDay); }
+ document.addEventListener('ww2:daychange', onDay);
  let lastDay = NaN;
- setInterval(() => { const d = currentDay(); if (d !== lastDay) { lastDay = d; if (state.snow) updateSnow(); applyOcc(); } }, 400);
+ setInterval(() => { const d = currentDay(); if (d !== lastDay) { lastDay = d; if (state.snow) updateSnow(); if (state.wx) updateWeather(); applyOcc(); } }, 400);
 
- window.WW2Terrain = { setMode, state, snow, snowFall, wetlands, vegetation, rivers, bases, relief, dem, applyOcc };
+ window.WW2Terrain = { setMode, state, snow, snowFall, rainFall, wxText, wetlands, vegetation, rivers, bases, relief, dem, applyOcc };
 })();
