@@ -14,6 +14,8 @@ concurrency:
   cancel-in-progress: true
 jobs:
   deploy:
+    # Paused: map/ is being replaced by the timeline map. A run in the same concurrency group cancels any queued deploy.
+    if: false
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment:
