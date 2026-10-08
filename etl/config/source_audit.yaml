@@ -1,0 +1,539 @@
+# מרשם מחקרי למקורות — נבדק מול דפי המקור הרשמיים ב־2026-07-28.
+#
+# הקובץ הזה משלים את sources.yaml התפעולי. הוא עונה על ארבע שאלות נפרדות:
+# 1. האם המקור סמכותי?
+# 2. האם הוא מתאים לגרעין הנתונים שאנחנו רוצים לייצר?
+# 3. האם מותר לקלוט ולפרסם אותו?
+# 4. מה רמת הדיוק והכיסוי שאפשר לטעון לה?
+#
+# scientific_status:
+#   approved    — אפשר לבנות עליו רשומות לאחר בדיקות האיכות הרגילות
+#   conditional — שימוש אפשרי רק תחת תנאי מפורש (רישיון, ידני, או הצלבה)
+#   blocked     — אין קליטה אוטומטית עד להסרת החסם
+#   reference   — מקור עזר/אימות בלבד; אינו יוצר ישות מפה לבדו
+
+as_of: "2026-07-28"
+schema_version: 1
+
+sources:
+  cshapes:
+    name: "CShapes 2.0 — ETH Zürich"
+    official_url: "https://icr.ethz.ch/data/cshapes/"
+    layers: [L10]
+    grain: "ישות מדינית × חלון תוקף"
+    authority: scholarly_dataset
+    evidence_role: secondary_reconstruction
+    acquisition: direct_download
+    formats: [csv, geojson, shapefile, sql, r]
+    license_spdx: "CC-BY-NC-SA-4.0"
+    rights_status: conditional_noncommercial
+    scientific_status: conditional
+    temporal_precision_days: 1
+    spatial_precision: country_boundary
+    coverage: "1886–2019; גבולות בין־מדינתיים, לא שליטה צבאית"
+    independence_group: cshapes
+    dimensions:
+      provenance: 0.95
+      authority: 0.90
+      temporal_precision: 0.90
+      spatial_precision: 0.84
+      completeness: 0.90
+    blockers:
+      - "הרישיון אינו מסחרי; לפני פרסום מסחרי נדרש מקור חלופי או אישור"
+
+  stanford_new_order:
+    name: "Stanford Spatial History — Building the New Order"
+    official_url: "https://web.stanford.edu/group/spatialhistory/static/publications/pub51.html"
+    layers: [L10, L11]
+    grain: "פוליגון שליטה/גבול × חודש"
+    authority: scholarly_dataset
+    evidence_role: secondary_reconstruction
+    acquisition: direct_download
+    formats: [shapefile]
+    license_spdx: null
+    rights_status: verify_before_redistribution
+    scientific_status: conditional
+    temporal_precision_days: 30
+    spatial_precision: regional_polygon
+    coverage: "פברואר 1938–ספטמבר 1944; חסרים החודשים האחרונים של המלחמה"
+    independence_group: stanford_new_order
+    dimensions:
+      provenance: 0.84
+      authority: 0.86
+      temporal_precision: 0.66
+      spatial_precision: 0.78
+      completeness: 0.72
+    blockers:
+      - "יש לאמת תנאי הפצה וקישור הורדה לפני קליטה אוטומטית"
+      - "אין כיסוי מלא לאוקטובר 1944–מאי 1945"
+
+  loc_situation_maps:
+    name: "Library of Congress — WWII Military Situation Maps"
+    official_url: "https://www.loc.gov/collections/world-war-ii-maps-military-situation-maps-from-1944-to-1945/about-this-collection/"
+    layers: [L11, L12]
+    grain: "גיליון מפה × יום"
+    authority: official_archive
+    evidence_role: primary_contemporary
+    acquisition: loc_api_and_manual_digitization
+    formats: [iiif, jpeg, pdf, json]
+    license_spdx: "US-PD"
+    rights_status: verified_public_domain
+    scientific_status: approved
+    temporal_precision_days: 1
+    spatial_precision: map_digitization
+    coverage: "416 מפות ו־115 דוחות; 1944-06-06–1945-07-26; מערב אירופה"
+    independence_group: us_army_12th_group
+    dimensions:
+      provenance: 1.00
+      authority: 1.00
+      temporal_precision: 1.00
+      spatial_precision: 0.82
+      completeness: 0.90
+    caveats:
+      - "מפות מצב משקפות את הידוע למפקדה בזמן אמת, לרבות טעויות ואי־ודאות"
+
+  openhistoricalmap:
+    name: "OpenHistoricalMap"
+    official_url: "https://www.openhistoricalmap.org/copyright"
+    layers: [L6, L13]
+    grain: "ישות OSM היסטורית × חלון תוקף"
+    authority: community_database
+    evidence_role: secondary_reconstruction
+    acquisition: overpass_or_planet
+    formats: [osm_pbf, osm_xml, geojson]
+    license_spdx: "CC0-1.0-mostly"
+    rights_status: per_feature_license_required
+    scientific_status: conditional
+    temporal_precision_days: variable
+    spatial_precision: feature_geometry
+    coverage: "עולמי אך לא אחיד; יש לבדוק start_date/end_date/source/license לכל ישות"
+    independence_group: ohm
+    dimensions:
+      provenance: 0.62
+      authority: 0.58
+      temporal_precision: 0.60
+      spatial_precision: 0.82
+      completeness: 0.48
+    blockers:
+      - "ישויות מסוימות נושאות רישיון שונה; CC0 אינו חל אוטומטית על כולן"
+
+  osm_fortifications:
+    name: "OpenStreetMap — ביצורים קיימים"
+    official_url: "https://www.openstreetmap.org/copyright"
+    layers: [L13]
+    grain: "ישות נוכחית"
+    authority: community_database
+    evidence_role: corroboration_only
+    acquisition: overpass
+    formats: [osm_pbf, osm_xml]
+    license_spdx: "ODbL-1.0"
+    rights_status: attributed_sharealike
+    scientific_status: reference
+    temporal_precision_days: null
+    spatial_precision: feature_geometry
+    coverage: "מצב נוכחי; אינו מוכיח קיום או תוואי בשנת 1939–1945"
+    independence_group: osm
+    dimensions:
+      provenance: 0.55
+      authority: 0.50
+      temporal_precision: 0.10
+      spatial_precision: 0.86
+      completeness: 0.46
+
+  nhhc_uboat_casualties:
+    name: "Naval History and Heritage Command — German U-Boat Casualties"
+    official_url: "https://www.history.navy.mil/research/library/online-reading-room/title-list-alphabetically/u/united-states-submarine-losses/german-u-boat-casualties-in-world-war-two.html"
+    layers: [L2, L3]
+    grain: "צוללת × אירוע אובדן"
+    authority: official_military_history
+    evidence_role: official_secondary
+    acquisition: structured_html_when_endpoint_restored
+    formats: [html]
+    license_spdx: "US-PD"
+    rights_status: verified_public_domain
+    scientific_status: approved
+    temporal_precision_days: 1
+    spatial_precision: reported_coordinate_or_named_area
+    coverage: "אבדות צוללות גרמניות; כולל מיקומים רבים אך לא את כלל אבדות הסוחר"
+    access_status: "official page returned HTTP 404 during raw acquisition on 2026-07-28"
+    independence_group: nhhc
+    dimensions:
+      provenance: 0.96
+      authority: 0.96
+      temporal_precision: 0.92
+      spatial_precision: 0.82
+      completeness: 0.82
+    blockers:
+      - "יש לאתר endpoint רשמי חלופי או עותק ארכיוני מאושר לפני קליטה"
+
+  us_army_cmh_logistics:
+    name: "U.S. Army Center of Military History — Green Books and logistics monographs"
+    official_url: "https://history.army.mil/"
+    layers: [L4, L5, L8, L12]
+    grain: "מבצע/נתיב × תקופה; טבלאות תפוקה"
+    authority: official_military_history
+    evidence_role: official_secondary
+    acquisition: pdf_tables_and_manual_georeferencing
+    formats: [pdf]
+    license_spdx: "US-PD"
+    rights_status: verified_public_domain
+    scientific_status: approved
+    temporal_precision_days: variable
+    spatial_precision: route_reconstruction
+    coverage: "מסדרונות יבשה/אוויר ותפוקה; הכיסוי משתנה בין זירות"
+    independence_group: us_army_cmh
+    dimensions:
+      provenance: 0.96
+      authority: 0.97
+      temporal_precision: 0.78
+      spatial_precision: 0.72
+      completeness: 0.76
+
+  nara_wwii_records:
+    name: "U.S. National Archives — WWII operational, shipping and refugee records"
+    official_url: "https://www.archives.gov/research"
+    layers: [L1, L2, L4, L5, L7, L8, L9, L12]
+    grain: "רשומה ארכיונית"
+    authority: official_archive
+    evidence_role: primary_contemporary
+    acquisition: catalog_export_and_manual_research
+    formats: [catalog_json, scanned_document, paper_archive]
+    license_spdx: "US-PD-mostly"
+    rights_status: item_level_rights_review
+    scientific_status: conditional
+    temporal_precision_days: variable
+    spatial_precision: variable
+    coverage: "רחב מאוד אך לא מערך נתונים אחיד; חלק גדול דורש מחקר ידני"
+    independence_group: nara
+    dimensions:
+      provenance: 0.98
+      authority: 1.00
+      temporal_precision: 0.76
+      spatial_precision: 0.68
+      completeness: 0.58
+
+  hgc_ss_camps:
+    name: "Holocaust Geographies Collaborative — SS Camp Dataset"
+    official_url: "https://holocaustgeographies.org/ss-camp-data"
+    layers: [L14]
+    grain: "מחנה/מחנה־משנה"
+    authority: scholarly_dataset
+    evidence_role: secondary_reconstruction
+    acquisition: direct_download
+    formats: [shapefile]
+    license_spdx: null
+    rights_status: attribution_required_verify_terms
+    scientific_status: conditional
+    temporal_precision_days: variable
+    spatial_precision: point
+    coverage: "מערכת מחנות ה־SS; אינו מכסה לבדו את כל הגטאות ואתרי הרדיפה"
+    independence_group: hgc_ss_camps
+    dimensions:
+      provenance: 0.90
+      authority: 0.92
+      temporal_precision: 0.72
+      spatial_precision: 0.82
+      completeness: 0.78
+
+  ushmm_camps:
+    name: "USHMM — Encyclopedia of Camps and Ghettos, 1933–1945"
+    official_url: "https://www.ushmm.org/id/research/publications/encyclopedia-camps-ghettos"
+    layers: [L14]
+    grain: "אתר רדיפה × ערך אנציקלופדי"
+    authority: museum_scholarly_reference
+    evidence_role: scholarly_secondary
+    acquisition: open_access_reading_and_institutional_request
+    formats: [html, pdf]
+    license_spdx: null
+    rights_status: permission_for_structured_republication
+    scientific_status: conditional
+    temporal_precision_days: variable
+    spatial_precision: named_place_or_point
+    coverage: "אלפי ערכים; הפרויקט מתעד עשרות אלפי אתרים אך לא כולם כנתונים פתוחים"
+    independence_group: ushmm_encyclopedia
+    dimensions:
+      provenance: 0.98
+      authority: 0.98
+      temporal_precision: 0.80
+      spatial_precision: 0.76
+      completeness: 0.88
+    blockers:
+      - "יש לקבל תנאים מפורשים לפני פרסום מחדש של מערך מובנה"
+
+  yad_vashem_transports:
+    name: "יד ושם — מאגר השילוחים בתקופת השואה"
+    official_url: "https://www.yadvashem.org/he/research/research-projects/deportations/deportation-catalog"
+    layers: [L16]
+    grain: "שילוח × מוצא × יעד × תאריך"
+    authority: museum_research_database
+    evidence_role: scholarly_secondary
+    acquisition: institutional_request
+    formats: [html, requested_export]
+    license_spdx: null
+    rights_status: permission_required
+    scientific_status: blocked
+    temporal_precision_days: variable
+    spatial_precision: named_origin_destination
+    coverage: "פרויקט לשחזור כלל השילוחים; אין API ציבורי מתועד"
+    independence_group: yad_vashem_deportations
+    dimensions:
+      provenance: 0.98
+      authority: 0.98
+      temporal_precision: 0.88
+      spatial_precision: 0.72
+      completeness: 0.90
+    blockers:
+      - "אין לבצע גרידה; נדרשת פנייה מוסדית וקבלת יצוא מורשה"
+
+  ehri_portal:
+    name: "European Holocaust Research Infrastructure — Portal API"
+    official_url: "https://documentation.ehri-project.eu/en/latest/technical/frontend/api_v1.html"
+    layers: [L14, L16]
+    grain: "תיאור ארכיוני/מוסד/מדינה"
+    authority: research_infrastructure
+    evidence_role: discovery_and_provenance
+    acquisition: bearer_token_api
+    formats: [json]
+    license_spdx: null
+    rights_status: token_and_item_rights
+    scientific_status: reference
+    temporal_precision_days: null
+    spatial_precision: repository_or_description
+    coverage: "API ניסויי לשלושה סוגי ישות; אינו מערך אירועי שילוח או מחנות"
+    independence_group: ehri
+    dimensions:
+      provenance: 0.94
+      authority: 0.94
+      temporal_precision: 0.40
+      spatial_precision: 0.48
+      completeness: 0.72
+    blockers:
+      - "נדרש bearer token; יש להשתמש לגילוי מקורות ולא ליצירת אירוע מפה לבדו"
+
+  un_archives_unrra:
+    name: "United Nations Archives — UNRRA"
+    official_url: "https://archives.un.org/en/content/wwii-refugees"
+    layers: [L7, L9]
+    grain: "תיק/מסמך/תצלום ארכיוני"
+    authority: official_archive
+    evidence_role: primary_contemporary
+    acquisition: catalog_and_manual_extraction
+    formats: [html, pdf, scanned_document]
+    license_spdx: null
+    rights_status: item_level_rights_review
+    scientific_status: conditional
+    temporal_precision_days: variable
+    spatial_precision: named_place_or_route
+    coverage: "פליטים, מחנות עקורים וסיוע UNRRA; חומר רב אינו מובנה"
+    independence_group: un_unrra
+    dimensions:
+      provenance: 0.98
+      authority: 1.00
+      temporal_precision: 0.72
+      spatial_precision: 0.66
+      completeness: 0.70
+
+  icrc_archives:
+    name: "International Committee of the Red Cross — Archives"
+    official_url: "https://www.icrc.org/en/icrc-archives"
+    layers: [L7, L9]
+    grain: "תיק/רשימה/מבצע הומניטרי"
+    authority: institutional_archive
+    evidence_role: primary_contemporary
+    acquisition: archive_catalog_and_research_visit
+    formats: [catalog, scanned_document, paper_archive]
+    license_spdx: null
+    rights_status: access_and_privacy_review
+    scientific_status: conditional
+    temporal_precision_days: variable
+    spatial_precision: named_place_or_route
+    coverage: "ארכיונים כלליים עד 1975 פתוחים בתיאום; רשומות אישיות כפופות להגבלות"
+    independence_group: icrc
+    dimensions:
+      provenance: 0.98
+      authority: 0.98
+      temporal_precision: 0.74
+      spatial_precision: 0.62
+      completeness: 0.68
+    blockers:
+      - "אין לייבא פרטים אישיים; נדרש מסלול פרטיות ואנונימיזציה"
+
+  polish_census_1931_gus:
+    name: "Główny Urząd Statystyczny — מפקד פולין 1931"
+    official_url: "https://100latgus.stat.gov.pl/historia-gus/spisy-ludnosci"
+    layers: [L15]
+    grain: "יחידה מנהלית × טבלת מפקד"
+    authority: official_statistical_archive
+    evidence_role: primary_official_statistics
+    acquisition: scan_ocr_double_entry
+    formats: [scanned_table]
+    license_spdx: null
+    rights_status: verify_item_rights
+    scientific_status: conditional
+    temporal_precision_days: 365
+    spatial_precision: historical_admin_unit
+    coverage: "פולין 1931; מודד בעיקר שפת אם ודת — לא 'לאום' אחיד"
+    independence_group: gus_1931
+    dimensions:
+      provenance: 0.98
+      authority: 1.00
+      temporal_precision: 0.68
+      spatial_precision: 0.74
+      completeness: 0.90
+    blockers:
+      - "OCR חייב אימות כפול; אסור למזג שפה, דת ואתניות למדד אחד"
+
+  cow_war:
+    name: "Correlates of War — War Data v4/v5.1"
+    official_url: "https://correlatesofwar.org/data-sets/COW-war/"
+    layers: [L12]
+    grain: "מלחמה/מדינה משתתפת"
+    authority: scholarly_dataset
+    evidence_role: macro_validation
+    acquisition: direct_download
+    formats: [csv, zip, pdf_codebook]
+    license_spdx: null
+    rights_status: citation_required
+    scientific_status: reference
+    temporal_precision_days: variable
+    spatial_precision: state_or_war
+    coverage: "מאקרו 1816–2007/2014; אינו מספק נקודות קרב או חזיתות"
+    independence_group: cow
+    dimensions:
+      provenance: 0.95
+      authority: 0.91
+      temporal_precision: 0.66
+      spatial_precision: 0.30
+      completeness: 0.86
+
+  convoyweb_hague:
+    name: "Arnold Hague Convoy Database"
+    official_url: "https://www.convoyweb.org.uk/hague/index.html"
+    layers: [L1]
+    grain: "שיירה/הפלגה"
+    authority: specialist_database
+    evidence_role: secondary_compilation
+    acquisition: permission_then_export
+    formats: [html]
+    license_spdx: null
+    rights_status: permission_required
+    scientific_status: blocked
+    temporal_precision_days: 1
+    spatial_precision: route_endpoints
+    coverage: "מסד שיירות מפורט; תנאי שימוש אינם מאפשרים להניח היתר לגרידה"
+    independence_group: arnold_hague
+    dimensions:
+      provenance: 0.86
+      authority: 0.88
+      temporal_precision: 0.94
+      spatial_precision: 0.62
+      completeness: 0.90
+    blockers:
+      - "אין קליטה אוטומטית לפני אישור מפורש"
+
+  uboat_net:
+    name: "uboat.net"
+    official_url: "https://uboat.net/"
+    layers: [L1, L2, L3]
+    grain: "כלי שיט/סיור/אירוע"
+    authority: specialist_database
+    evidence_role: secondary_compilation
+    acquisition: permission_then_export
+    formats: [html]
+    license_spdx: null
+    rights_status: permission_required
+    scientific_status: blocked
+    temporal_precision_days: 1
+    spatial_precision: reported_coordinate
+    coverage: "עשיר מאוד אך מוגן בזכויות; אינו מקור שמותר לגרד כברירת מחדל"
+    independence_group: uboat_net
+    dimensions:
+      provenance: 0.84
+      authority: 0.88
+      temporal_precision: 0.94
+      spatial_precision: 0.82
+      completeness: 0.92
+    blockers:
+      - "אין קליטה אוטומטית לפני אישור מפורש"
+
+layer_plan:
+  L1:
+    label_he: "שיירות ונתיבי ים"
+    primary: [nara_wwii_records]
+    corroboration: [convoyweb_hague, uboat_net]
+    status: partial
+  L2:
+    label_he: "אבדות ים"
+    primary: [nhhc_uboat_casualties, nara_wwii_records]
+    corroboration: [uboat_net]
+    status: partial
+  L3:
+    label_he: "פעילות צוללות"
+    primary: [nhhc_uboat_casualties]
+    corroboration: [uboat_net]
+    status: partial
+  L4:
+    label_he: "מסדרונות יבשתיים"
+    primary: [us_army_cmh_logistics, nara_wwii_records]
+    corroboration: []
+    status: ready_for_ingestor
+  L5:
+    label_he: "גשרים אוויריים"
+    primary: [us_army_cmh_logistics, nara_wwii_records]
+    corroboration: []
+    status: ready_for_ingestor
+  L6:
+    label_he: "מסילות"
+    primary: [openhistoricalmap]
+    corroboration: []
+    status: needs_per_feature_provenance
+  L7:
+    label_he: "סיוע הומניטרי"
+    primary: [un_archives_unrra, icrc_archives]
+    corroboration: [nara_wwii_records]
+    status: manual_research
+  L8:
+    label_he: "תפוקה ולוגיסטיקה"
+    primary: [us_army_cmh_logistics]
+    corroboration: [nara_wwii_records]
+    status: ready_for_table_extraction
+  L9:
+    label_he: "פליטים ועקורים"
+    primary: [un_archives_unrra, icrc_archives]
+    corroboration: [nara_wwii_records]
+    status: manual_research
+  L10:
+    label_he: "גבולות מדיניים ושליטה"
+    primary: [cshapes, stanford_new_order]
+    corroboration: [loc_situation_maps]
+    status: license_conditional
+  L11:
+    label_he: "קווי חזית"
+    primary: [loc_situation_maps]
+    corroboration: [stanford_new_order]
+    status: ready_for_digitization
+  L12:
+    label_he: "קרבות ומבצעים"
+    primary: [loc_situation_maps, us_army_cmh_logistics]
+    corroboration: [cow_war]
+    status: partial_by_theater
+  L13:
+    label_he: "ביצורים"
+    primary: [openhistoricalmap]
+    corroboration: [osm_fortifications]
+    status: needs_primary_map_corroboration
+  L14:
+    label_he: "מחנות וגטאות"
+    primary: [hgc_ss_camps, ushmm_camps]
+    corroboration: [ehri_portal]
+    status: license_conditional
+  L15:
+    label_he: "דמוגרפיה"
+    primary: [polish_census_1931_gus]
+    corroboration: []
+    status: ready_for_double_entry_ocr
+  L16:
+    label_he: "טרנספורטים"
+    primary: [yad_vashem_transports]
+    corroboration: [ehri_portal]
+    status: blocked_pending_institutional_export

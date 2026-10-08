@@ -1,0 +1,25 @@
+# ברירת המחדל היא לא לשמור מאגרי־ענק, אבל קלט שלבים 1–2 נשמר כדי שהבנייה
+# הנוכחית תהיה דטרמיניסטית וניתנת לשחזור.
+data/*
+!data/seed/
+!data/seed/*.json
+!data/raw/
+data/raw/*
+!data/raw/cshapes/
+!data/raw/cshapes/cshapes_2_gw.topojson.xz
+
+# פייתון
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+*.egg-info/
+
+# סודות ואישורים — permissions_granted.yaml כן נכנס (הוא מצב, לא סוד),
+# אבל מסמכי האישור עצמם לא.
+docs/permissions/
+.env
+
+# מערכת
+.DS_Store

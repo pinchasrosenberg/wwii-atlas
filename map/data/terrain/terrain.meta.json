@@ -1,0 +1,17 @@
+{
+  "id": "terrain:natural-earth-2-relief",
+  "asset_url": "./data/terrain/natural-earth-2-relief.jpg",
+  "tile_template": "./data/terrain/tiles/{z}/{x}/{y}.jpg",
+  "tile_size": 256,
+  "tile_max_zoom": 4,
+  "bounds": [-180, -85, 180, 85],
+  "source_ids": ["natural_earth_2_relief_50m"],
+  "data_status": "real",
+  "derivation": "resampled_visual_reference",
+  "publish_status": "published",
+  "temporal_semantics": "physical_context_stable_1939_1946",
+  "valid_from": "1939-01-01",
+  "valid_to": "1946-12-31",
+  "asset_sha256": "b8527baf4f8f25fdb0fb875a59b68e75d1051ef0e655e92cf77c8486756801f4",
+  "note_he": "תבליט פיזי קבוע; שכבות היסטוריות מעליו מסונכרנות לתאריך הנבחר."
+}

@@ -1,0 +1,450 @@
+{
+  "metadata": {
+    "title": "WWII Atlas stages 3–8 — representative, source-backed coverage",
+    "status": "representative-open-data",
+    "coverage_note_he": "כל רכיבי המערכת פעילים, אך הכיסוי הוא תת־קבוצה מייצגת. מסילות, חזיתות וטרנספורטים שאינם ניתנים לאימות ממקור פתוח מסומנים כשחזור ואינם מוצגים ככיסוי מלא.",
+    "sources": [
+      {
+        "id": "army_cmh_persian",
+        "name": "U.S. Army Center of Military History — The Persian Corridor and Aid to Russia",
+        "url": "https://history.army.mil/Portals/143/Images/Publications/Publication%20By%20Title%20Images/P%20Pdf/CMH_Pub_8-1.pdf",
+        "license": "U.S. government publication"
+      },
+      {
+        "id": "army_cmh_red_ball",
+        "name": "U.S. Army Center of Military History — Red Ball Express",
+        "url": "https://history.army.mil/Publications/Publications-Catalog/The-American-Soldier-Print-Set-4/",
+        "license": "U.S. government publication"
+      },
+      {
+        "id": "army_cmh_cbi",
+        "name": "U.S. Army Center of Military History — China-Burma-India and the Hump",
+        "url": "https://history.army.mil/Portals/143/Images/Publications/ArmyHistoryMag/pdf/20102019/AH93%28W%29.pdf",
+        "license": "U.S. government publication"
+      },
+      {
+        "id": "ushmm_rail",
+        "name": "USHMM Holocaust Encyclopedia — European rail system, 1939",
+        "url": "https://encyclopedia.ushmm.org/content/en/map/european-rail-system-1939",
+        "license": "Educational reference; geometry is a schematic reconstruction"
+      },
+      {
+        "id": "ushmm_ghettos",
+        "name": "USHMM Holocaust Encyclopedia — Ghettos maps",
+        "url": "https://encyclopedia.ushmm.org/content/en/gallery/ghettos-maps",
+        "license": "Educational reference; representative subset"
+      },
+      {
+        "id": "ushmm_camps",
+        "name": "USHMM Holocaust Encyclopedia — Nazi camps",
+        "url": "https://encyclopedia.ushmm.org/content/en/article/nazi-camps",
+        "license": "Educational reference; representative subset"
+      },
+      {
+        "id": "loc_situation",
+        "name": "Library of Congress — World War II Military Situation Maps, 1944–1945",
+        "url": "https://www.loc.gov/collections/world-war-ii-maps-military-situation-maps-from-1944-to-1945/about-this-collection/",
+        "license": "Public domain scans"
+      },
+      {
+        "id": "un_unrra",
+        "name": "United Nations Archives — UNRRA photographs and records",
+        "url": "https://archives.un.org/content/united-nations-relief-and-rehabilitation-administration-unrra-1943-1946",
+        "license": "UN Archives reference"
+      },
+      {
+        "id": "icrc_archives",
+        "name": "International Committee of the Red Cross — Second World War archives",
+        "url": "https://www.icrc.org/en/archives",
+        "license": "Archival reference"
+      },
+      {
+        "id": "atlas_method",
+        "name": "WWII Atlas methodology — representative reconstructions",
+        "url": "./",
+        "license": "Project methodology"
+      }
+    ]
+  },
+  "supply_routes": [
+    {
+      "route_id": "PERSIAN_CORRIDOR",
+      "name_he": "המסדרון הפרסי",
+      "name_en": "Persian Corridor",
+      "route_class": "land_corridor",
+      "active_from": "1941-08-01",
+      "active_to": "1945-09-02",
+      "origin_name_he": "נמלי המפרץ הפרסי",
+      "destination_name_he": "טהרן והקווקז",
+      "path": [[56.27,27.18],[51.42,35.69],[49.59,40.41],[44.51,40.18]],
+      "duration_days": 9,
+      "cargo": ["vehicles","ordnance","food","raw_materials"],
+      "derivation": "algorithmic",
+      "confidence": "official_summary",
+      "bottleneck": "קיבולת נמלים, מסילות וכבישים דרך הרי זגרוס",
+      "throughput": [
+        {"date":"1941-08-01","tonnage":10000,"losses_tonnage":150},
+        {"date":"1942-10-01","tonnage":30000,"losses_tonnage":360},
+        {"date":"1943-05-01","tonnage":100000,"losses_tonnage":820},
+        {"date":"1944-05-01","tonnage":150000,"losses_tonnage":900}
+      ],
+      "source_ids": ["army_cmh_persian"]
+    },
+    {
+      "route_id": "THE_HUMP",
+      "name_he": "הרכבת האווירית מעל ההימלאיה",
+      "name_en": "The Hump airlift",
+      "route_class": "air_bridge",
+      "active_from": "1942-04-08",
+      "active_to": "1945-09-02",
+      "origin_name_he": "אסאם, הודו",
+      "destination_name_he": "קונמינג, סין",
+      "path": [[91.70,26.10],[94.10,27.30],[97.00,27.50],[99.60,26.40],[102.72,25.04]],
+      "duration_days": 1,
+      "cargo": ["fuel","ordnance","medical","personnel"],
+      "derivation": "algorithmic",
+      "confidence": "official_summary",
+      "bottleneck": "רכס ההימלאיה, מזג אוויר ושדות תעופה מוגבלים",
+      "throughput": [
+        {"date":"1942-06-01","tonnage":1100,"losses_tonnage":90},
+        {"date":"1943-06-01","tonnage":8500,"losses_tonnage":310},
+        {"date":"1944-06-01","tonnage":18000,"losses_tonnage":430},
+        {"date":"1945-01-01","tonnage":44000,"losses_tonnage":620}
+      ],
+      "source_ids": ["army_cmh_cbi"]
+    },
+    {
+      "route_id": "RED_BALL",
+      "name_he": "רד בול אקספרס",
+      "name_en": "Red Ball Express",
+      "route_class": "land_corridor",
+      "active_from": "1944-08-25",
+      "active_to": "1944-11-16",
+      "origin_name_he": "סן־לו",
+      "destination_name_he": "מרכזי האספקה ממזרח לסן",
+      "path": [[-1.09,49.12],[-0.37,49.18],[1.10,49.44],[2.35,48.86],[4.02,49.26],[5.38,49.16]],
+      "duration_days": 2,
+      "cargo": ["fuel","ordnance","food","vehicles"],
+      "derivation": "algorithmic",
+      "confidence": "official_summary",
+      "bottleneck": "מחסור ברכבות ובמשאיות לאחר הפריצה מנורמנדי",
+      "throughput": [
+        {"date":"1944-08-25","tonnage":4200,"losses_tonnage":80},
+        {"date":"1944-08-29","tonnage":12342,"losses_tonnage":180},
+        {"date":"1944-09-15","tonnage":7600,"losses_tonnage":140},
+        {"date":"1944-10-15","tonnage":5200,"losses_tonnage":90},
+        {"date":"1944-11-16","tonnage":1800,"losses_tonnage":25}
+      ],
+      "source_ids": ["army_cmh_red_ball"]
+    },
+    {
+      "route_id": "LEDO_ROAD",
+      "name_he": "דרך לדו",
+      "name_en": "Ledo Road",
+      "route_class": "land_corridor",
+      "active_from": "1943-12-01",
+      "active_to": "1945-09-02",
+      "origin_name_he": "לדו, הודו",
+      "destination_name_he": "קונמינג, סין",
+      "path": [[94.10,27.29],[96.13,26.10],[97.39,24.26],[98.52,24.44],[100.08,25.02],[102.72,25.04]],
+      "duration_days": 8,
+      "cargo": ["fuel","vehicles","ordnance","medical"],
+      "derivation": "algorithmic",
+      "confidence": "scholarly_estimate",
+      "bottleneck": "מונסון, הרים וגשרים באזור צפון בורמה",
+      "throughput": [
+        {"date":"1944-01-01","tonnage":500,"losses_tonnage":25},
+        {"date":"1944-07-01","tonnage":2200,"losses_tonnage":90},
+        {"date":"1945-01-01","tonnage":8500,"losses_tonnage":210},
+        {"date":"1945-07-01","tonnage":16000,"losses_tonnage":260}
+      ],
+      "source_ids": ["army_cmh_cbi"]
+    },
+    {
+      "route_id": "BURMA_ROAD",
+      "name_he": "דרך בורמה",
+      "name_en": "Burma Road",
+      "route_class": "land_corridor",
+      "active_from": "1938-12-02",
+      "active_to": "1942-05-15",
+      "origin_name_he": "לאשיו",
+      "destination_name_he": "קונמינג",
+      "path": [[97.75,22.94],[99.08,23.89],[100.70,24.42],[102.72,25.04]],
+      "duration_days": 6,
+      "cargo": ["fuel","ordnance","medical"],
+      "derivation": "algorithmic",
+      "confidence": "scholarly_estimate",
+      "bottleneck": "דרך הררית בעלת קיבולת נמוכה; נותקה עם נפילת בורמה",
+      "throughput": [
+        {"date":"1939-01-01","tonnage":1500,"losses_tonnage":40},
+        {"date":"1940-01-01","tonnage":5200,"losses_tonnage":120},
+        {"date":"1941-07-01","tonnage":9200,"losses_tonnage":260},
+        {"date":"1942-05-01","tonnage":800,"losses_tonnage":100}
+      ],
+      "source_ids": ["army_cmh_cbi"]
+    },
+    {
+      "route_id": "ROAD_OF_LIFE",
+      "name_he": "דרך החיים מעל אגם לדוגה",
+      "name_en": "Road of Life across Lake Ladoga",
+      "route_class": "land_corridor",
+      "active_from": "1941-11-20",
+      "active_to": "1943-03-30",
+      "origin_name_he": "קובונה",
+      "destination_name_he": "לנינגרד",
+      "path": [[31.02,60.02],[30.62,59.99],[30.31,59.94]],
+      "duration_days": 1,
+      "cargo": ["food","fuel","medical","personnel"],
+      "derivation": "algorithmic",
+      "confidence": "scholarly_estimate",
+      "bottleneck": "קרח עונתי, הפצצות וקיבולת מוגבלת",
+      "throughput": [
+        {"date":"1941-12-01","tonnage":6000,"losses_tonnage":400},
+        {"date":"1942-02-01","tonnage":18000,"losses_tonnage":900},
+        {"date":"1942-12-01","tonnage":26000,"losses_tonnage":700},
+        {"date":"1943-03-01","tonnage":8000,"losses_tonnage":220}
+      ],
+      "source_ids": ["atlas_method"]
+    },
+    {
+      "route_id": "PLUTO",
+      "name_he": "צינור PLUTO",
+      "name_en": "Pipeline Under the Ocean",
+      "route_class": "pipeline",
+      "active_from": "1944-08-12",
+      "active_to": "1945-05-08",
+      "origin_name_he": "האי וייט",
+      "destination_name_he": "שרבור ומאוחר יותר אנטוורפן",
+      "path": [[-1.30,50.68],[-1.90,50.25],[-1.62,49.64],[-1.10,49.63]],
+      "duration_days": 1,
+      "cargo": ["fuel"],
+      "derivation": "algorithmic",
+      "confidence": "official_summary",
+      "bottleneck": "הנחת צינור תת־ימי ופתיחת מסופי דלק בצרפת",
+      "throughput": [
+        {"date":"1944-08-15","tonnage":1000,"losses_tonnage":20},
+        {"date":"1944-12-01","tonnage":4500,"losses_tonnage":60},
+        {"date":"1945-04-01","tonnage":9000,"losses_tonnage":90}
+      ],
+      "source_ids": ["atlas_method"]
+    },
+    {
+      "route_id": "ALSIB",
+      "name_he": "הנתיב האווירי אלסקה–סיביר",
+      "name_en": "Alaska–Siberia air route",
+      "route_class": "air_bridge",
+      "active_from": "1942-09-29",
+      "active_to": "1945-09-01",
+      "origin_name_he": "גרייט פולס, מונטנה",
+      "destination_name_he": "קרסנויארסק",
+      "path": [[-111.30,47.50],[-113.50,53.55],[-147.72,64.84],[-166.54,68.75],[-169.05,66.08],[129.73,62.03],[104.28,52.28],[92.87,56.01]],
+      "duration_days": 8,
+      "cargo": ["aircraft","personnel"],
+      "derivation": "algorithmic",
+      "confidence": "official_summary",
+      "bottleneck": "מזג אוויר קיצוני, טווחי טיסה ושרשרת שדות תעופה",
+      "throughput": [
+        {"date":"1942-10-01","tonnage":350,"losses_tonnage":12},
+        {"date":"1943-07-01","tonnage":1400,"losses_tonnage":34},
+        {"date":"1944-07-01","tonnage":2300,"losses_tonnage":48},
+        {"date":"1945-07-01","tonnage":1800,"losses_tonnage":32}
+      ],
+      "source_ids": ["atlas_method"]
+    },
+    {
+      "route_id": "STALINGRAD_AIRLIFT",
+      "name_he": "הרכבת האווירית לסטלינגרד",
+      "name_en": "Stalingrad airlift",
+      "route_class": "air_bridge",
+      "active_from": "1942-11-24",
+      "active_to": "1943-02-02",
+      "origin_name_he": "שדות תעופה ממערב לכיס",
+      "destination_name_he": "פיטומניק וסטלינגרד",
+      "path": [[40.30,48.70],[42.50,48.70],[44.18,48.71],[44.51,48.71]],
+      "duration_days": 1,
+      "cargo": ["food","fuel","ordnance","medical"],
+      "derivation": "algorithmic",
+      "confidence": "scholarly_estimate",
+      "bottleneck": "מזג אוויר, עליונות אווירית וקיבולת נשיאה נמוכה מן הדרישה",
+      "throughput": [
+        {"date":"1942-11-25","tonnage":90,"losses_tonnage":15},
+        {"date":"1942-12-15","tonnage":120,"losses_tonnage":24},
+        {"date":"1943-01-10","tonnage":75,"losses_tonnage":30},
+        {"date":"1943-02-01","tonnage":12,"losses_tonnage":8}
+      ],
+      "source_ids": ["atlas_method"]
+    }
+  ],
+  "submarine_patrols": [
+    {
+      "id": "u-boat-western-approaches",
+      "name_he": "אזור פעילות צוללות — המבואות המערביים",
+      "name_en": "U-boat activity — Western Approaches",
+      "active_from": "1939-09-01",
+      "active_to": "1943-05-31",
+      "path": [[-18.0,48.0],[-22.0,52.0],[-18.0,57.0],[-10.0,58.0],[-8.0,52.0],[-18.0,48.0]],
+      "derivation": "algorithmic",
+      "confidence": "schematic",
+      "note_he": "אזור פעילות סכמטי המבוסס על הקשר אבדות הים; אינו יומן סיור של צוללת יחידה.",
+      "source_ids": ["atlas_method"]
+    },
+    {
+      "id": "u-boat-mid-atlantic",
+      "name_he": "אזור פעילות צוללות — מרכז האטלנטי",
+      "name_en": "U-boat activity — Mid-Atlantic",
+      "active_from": "1941-07-01",
+      "active_to": "1943-06-30",
+      "path": [[-46.0,46.0],[-42.0,54.0],[-34.0,58.0],[-27.0,52.0],[-31.0,45.0],[-46.0,46.0]],
+      "derivation": "algorithmic",
+      "confidence": "schematic",
+      "note_he": "אזור פעילות סכמטי; נתוני יומני הסיור המלאים אינם מופצים בפרויקט ללא הרשאה.",
+      "source_ids": ["atlas_method"]
+    },
+    {
+      "id": "u-boat-us-east-coast",
+      "name_he": "אזור פעילות צוללות — החוף המזרחי של ארה״ב",
+      "name_en": "U-boat activity — U.S. East Coast",
+      "active_from": "1942-01-13",
+      "active_to": "1942-08-31",
+      "path": [[-74.0,40.7],[-73.0,36.0],[-78.0,30.0],[-80.0,25.5],[-75.0,32.0],[-74.0,40.7]],
+      "derivation": "algorithmic",
+      "confidence": "schematic",
+      "note_he": "אזור פעילות סכמטי בתקופת המתקפה על הספנות לאורך החוף האמריקאי.",
+      "source_ids": ["atlas_method"]
+    }
+  ],
+  "railways": [
+    {"id":"rail-london-liverpool","name_he":"לונדון–ברמינגהם–ליברפול","gauge_mm":1435,"status":"operational","active_from":"1937-01-01","active_to":"1946-12-31","path":[[-0.13,51.51],[-1.90,52.49],[-2.98,53.41]],"source_ids":["ushmm_rail"],"derivation":"algorithmic"},
+    {"id":"rail-paris-brussels","name_he":"פריז–בריסל","gauge_mm":1435,"status":"operational","active_from":"1937-01-01","active_to":"1946-12-31","path":[[2.35,48.86],[4.35,50.85]],"source_ids":["ushmm_rail"],"derivation":"algorithmic"},
+    {"id":"rail-brussels-berlin","name_he":"בריסל–קלן–ברלין","gauge_mm":1435,"status":"operational","active_from":"1937-01-01","active_to":"1946-12-31","path":[[4.35,50.85],[6.96,50.94],[9.99,53.55],[13.40,52.52]],"source_ids":["ushmm_rail"],"derivation":"algorithmic"},
+    {"id":"rail-berlin-warsaw","name_he":"ברלין–פוזנן–ורשה","gauge_mm":1435,"status":"operational","active_from":"1937-01-01","active_to":"1945-04-30","path":[[13.40,52.52],[16.93,52.41],[21.01,52.23]],"source_ids":["ushmm_rail"],"derivation":"algorithmic"},
+    {"id":"rail-warsaw-bialystok","name_he":"ורשה–ביאליסטוק","gauge_mm":1435,"status":"operational","active_from":"1937-01-01","active_to":"1946-12-31","path":[[21.01,52.23],[23.17,53.13]],"source_ids":["ushmm_rail"],"derivation":"algorithmic"},
+    {"id":"rail-warsaw-lublin-lviv","name_he":"ורשה–לובלין–לבוב","gauge_mm":1435,"status":"operational","active_from":"1937-01-01","active_to":"1946-12-31","path":[[21.01,52.23],[22.57,51.25],[24.03,49.84]],"source_ids":["ushmm_rail"],"derivation":"algorithmic"},
+    {"id":"rail-vienna-krakow","name_he":"וינה–קרקוב","gauge_mm":1435,"status":"operational","active_from":"1937-01-01","active_to":"1946-12-31","path":[[16.37,48.21],[19.94,50.06]],"source_ids":["ushmm_rail"],"derivation":"algorithmic"},
+    {"id":"rail-krakow-auschwitz","name_he":"קרקוב–אושוויינצ׳ים","gauge_mm":1435,"status":"operational","active_from":"1937-01-01","active_to":"1945-01-27","path":[[19.94,50.06],[19.18,50.03]],"source_ids":["ushmm_rail"],"derivation":"algorithmic"},
+    {"id":"rail-prague-theresienstadt","name_he":"פראג–טרזין","gauge_mm":1435,"status":"operational","active_from":"1937-01-01","active_to":"1945-05-08","path":[[14.44,50.08],[14.15,50.51]],"source_ids":["ushmm_rail"],"derivation":"algorithmic"},
+    {"id":"rail-paris-drancy-east","name_he":"פריז/דראנסי–מץ–הרייך","gauge_mm":1435,"status":"operational","active_from":"1937-01-01","active_to":"1945-05-08","path":[[2.45,48.92],[6.18,49.12],[8.68,50.11],[13.40,52.52]],"source_ids":["ushmm_rail"],"derivation":"algorithmic"},
+    {"id":"rail-warsaw-minsk","name_he":"ורשה–מינסק","gauge_mm":1435,"status":"gauge-converted","active_from":"1941-07-01","active_to":"1944-07-31","path":[[21.01,52.23],[23.70,52.10],[27.56,53.90]],"source_ids":["atlas_method"],"derivation":"algorithmic"},
+    {"id":"rail-minsk-smolensk","name_he":"מינסק–סמולנסק","gauge_mm":1520,"status":"gauge-break","active_from":"1937-01-01","active_to":"1946-12-31","path":[[27.56,53.90],[32.05,54.78]],"source_ids":["atlas_method"],"derivation":"algorithmic"},
+    {"id":"rail-smolensk-moscow","name_he":"סמולנסק–מוסקבה","gauge_mm":1520,"status":"operational","active_from":"1937-01-01","active_to":"1946-12-31","path":[[32.05,54.78],[37.62,55.75]],"source_ids":["atlas_method"],"derivation":"algorithmic"},
+    {"id":"rail-kharkiv-stalingrad","name_he":"חרקוב–סטלינגרד","gauge_mm":1520,"status":"war-damaged","active_from":"1937-01-01","active_to":"1946-12-31","path":[[36.23,49.99],[39.71,47.24],[44.51,48.71]],"source_ids":["atlas_method"],"derivation":"algorithmic"},
+    {"id":"rail-thessaloniki-belgrade","name_he":"סלוניקי–סקופיה–בלגרד","gauge_mm":1435,"status":"operational","active_from":"1937-01-01","active_to":"1946-12-31","path":[[22.94,40.64],[21.43,42.00],[20.46,44.81]],"source_ids":["ushmm_rail"],"derivation":"algorithmic"}
+  ],
+  "camps": [
+    {"id":"warsaw-ghetto","name_he":"גטו ורשה","name_en":"Warsaw Ghetto","camp_type":"ghetto","operator":"German occupation authorities","active_from":"1940-10-12","active_to":"1943-05-16","position":[21.00,52.25],"context_he":"הגטו הגדול ביותר באירופה הכבושה; מוצג כאן כאתר היסטורי ולא כמדד או דירוג.","uncertainty_he":"תאריכי הסגירה מייצגים את חיסול הגטו לאחר המרד.","source_ids":["ushmm_ghettos"]},
+    {"id":"lodz-ghetto","name_he":"גטו לודז׳","name_en":"Łódź Ghetto","camp_type":"ghetto","operator":"German occupation authorities","active_from":"1940-04-30","active_to":"1944-08-29","position":[19.46,51.77],"context_he":"גטו מרכזי בפולין הכבושה; תת־קבוצה מייצגת של רשת הגטאות.","source_ids":["ushmm_ghettos"]},
+    {"id":"theresienstadt","name_he":"טרזיינשטט / טרזין","name_en":"Theresienstadt","camp_type":"ghetto","operator":"SS","active_from":"1941-11-24","active_to":"1945-05-08","position":[14.15,50.51],"context_he":"גטו ומחנה מעבר בפרוטקטורט של בוהמיה ומוראביה.","source_ids":["ushmm_ghettos","ushmm_camps"]},
+    {"id":"auschwitz-birkenau","name_he":"אושוויץ־בירקנאו","name_en":"Auschwitz-Birkenau","camp_type":"extermination","operator":"SS","active_from":"1940-05-20","active_to":"1945-01-27","position":[19.18,50.03],"context_he":"מתחם מחנות ריכוז והשמדה. מספרי קורבנות אינם מוצגים כאן ללא טווח ומקור פרטני.","source_ids":["ushmm_camps"]},
+    {"id":"treblinka","name_he":"טרבלינקה","name_en":"Treblinka","camp_type":"extermination","operator":"SS and German police","active_from":"1942-07-23","active_to":"1943-11-17","position":[22.05,52.63],"context_he":"מרכז השמדה בפולין הכבושה. אין בממשק דירוג בין אתרי רצח.","source_ids":["ushmm_camps"]},
+    {"id":"sobibor","name_he":"סוביבור","name_en":"Sobibor","camp_type":"extermination","operator":"SS and German police","active_from":"1942-05-01","active_to":"1943-10-17","position":[23.60,51.45],"context_he":"מרכז השמדה במסגרת מבצע ריינהרד.","source_ids":["ushmm_camps"]},
+    {"id":"belzec","name_he":"בלז׳ץ","name_en":"Belzec","camp_type":"extermination","operator":"SS and German police","active_from":"1942-03-17","active_to":"1943-06-30","position":[23.46,50.38],"context_he":"מרכז השמדה במסגרת מבצע ריינהרד.","source_ids":["ushmm_camps"]},
+    {"id":"majdanek","name_he":"מיידנק","name_en":"Majdanek","camp_type":"concentration","operator":"SS","active_from":"1941-10-01","active_to":"1944-07-23","position":[22.60,51.22],"context_he":"מחנה ריכוז ועבודה כפויה ליד לובלין, ששימש גם אתר רצח.","source_ids":["ushmm_camps"]},
+    {"id":"dachau","name_he":"דכאו","name_en":"Dachau","camp_type":"concentration","operator":"SS","active_from":"1933-03-22","active_to":"1945-04-29","position":[11.47,48.27],"context_he":"מחנה הריכוז הראשון הקבוע של המשטר הנאצי.","source_ids":["ushmm_camps"]},
+    {"id":"buchenwald","name_he":"בוכנוואלד","name_en":"Buchenwald","camp_type":"concentration","operator":"SS","active_from":"1937-07-15","active_to":"1945-04-11","position":[11.25,51.02],"context_he":"מחנה ריכוז ליד ויימאר עם רשת מחנות משנה.","source_ids":["ushmm_camps"]},
+    {"id":"bergen-belsen","name_he":"ברגן־בלזן","name_en":"Bergen-Belsen","camp_type":"concentration","operator":"SS","active_from":"1943-04-01","active_to":"1945-04-15","position":[9.91,52.76],"context_he":"מחנה ריכוז בצפון גרמניה; שוחרר בידי הצבא הבריטי.","source_ids":["ushmm_camps"]},
+    {"id":"drancy","name_he":"דראנסי","name_en":"Drancy","camp_type":"transit","operator":"German occupation authorities and French police","active_from":"1941-08-20","active_to":"1944-08-17","position":[2.45,48.92],"context_he":"מחנה מעבר מרכזי לגירושים מצרפת.","source_ids":["ushmm_camps"]}
+  ],
+  "transports": [
+    {"id":"transport-warsaw-treblinka","name_he":"ורשה → טרבלינקה","active_from":"1942-07-22","active_to":"1942-09-21","origin_name_he":"גטו ורשה","destination_name_he":"טרבלינקה","path":[[21.00,52.25],[21.73,52.40],[22.05,52.63]],"mode":"rail_freight","derivation":"algorithmic","coverage_he":"מסדרון מייצג של גל הגירושים; אינו רכבת בודדת.","source_ids":["ushmm_ghettos","ushmm_rail"]},
+    {"id":"transport-drancy-auschwitz","name_he":"דראנסי → אושוויץ־בירקנאו","active_from":"1942-03-27","active_to":"1944-08-17","origin_name_he":"דראנסי","destination_name_he":"אושוויץ־בירקנאו","path":[[2.45,48.92],[6.18,49.12],[8.68,50.11],[13.40,52.52],[16.93,52.41],[19.18,50.03]],"mode":"rail_freight","derivation":"algorithmic","coverage_he":"מסדרון מייצג המבוסס על רשת המסילות; אין הצגה של בני אדם כזרם מונפש.","source_ids":["ushmm_camps","ushmm_rail"]},
+    {"id":"transport-theresienstadt-auschwitz","name_he":"טרזין → אושוויץ־בירקנאו","active_from":"1942-10-26","active_to":"1944-10-28","origin_name_he":"טרזין","destination_name_he":"אושוויץ־בירקנאו","path":[[14.15,50.51],[14.44,50.08],[16.37,48.21],[19.94,50.06],[19.18,50.03]],"mode":"rail_freight","derivation":"algorithmic","coverage_he":"מסלול מייצג על רשת המסילות המשוחזרת.","source_ids":["ushmm_camps","ushmm_rail"]},
+    {"id":"transport-thessaloniki-auschwitz","name_he":"סלוניקי → אושוויץ־בירקנאו","active_from":"1943-03-15","active_to":"1943-08-02","origin_name_he":"סלוניקי","destination_name_he":"אושוויץ־בירקנאו","path":[[22.94,40.64],[21.43,42.00],[20.46,44.81],[19.04,47.50],[16.37,48.21],[19.94,50.06],[19.18,50.03]],"mode":"rail_freight","derivation":"algorithmic","coverage_he":"מסדרון מייצג; כיסוי הטרנספורטים הפרטניים טרם התקבל ממקור מוסדי.","source_ids":["ushmm_camps","ushmm_rail"]},
+    {"id":"transport-lodz-auschwitz","name_he":"לודז׳ → אושוויץ־בירקנאו","active_from":"1944-08-07","active_to":"1944-08-29","origin_name_he":"גטו לודז׳","destination_name_he":"אושוויץ־בירקנאו","path":[[19.46,51.77],[19.94,50.06],[19.18,50.03]],"mode":"rail_freight","derivation":"algorithmic","coverage_he":"מסדרון מייצג של חיסול הגטו; אינו טרנספורט יחיד.","source_ids":["ushmm_ghettos","ushmm_rail"]}
+  ],
+  "fronts": [
+    {"id":"front-poland-1939","name_he":"החזית בפולין — שחזור שבועי","as_of":"1939-09-17","valid_from":"1939-09-10","valid_to":"1939-09-24","path":[[14.7,53.9],[17.4,53.0],[19.0,52.4],[20.5,51.2],[22.5,50.2],[24.1,49.5]],"confidence":"reconstruction","note_he":"קו סכמטי לצורכי התמצאות; אינו דיגיטציה של מפת מצב מקורית.","source_ids":["atlas_method"]},
+    {"id":"front-barbarossa-1941","name_he":"החזית המזרחית — פתיחת ברברוסה","as_of":"1941-07-15","valid_from":"1941-06-22","valid_to":"1941-08-15","path":[[24.0,56.8],[28.5,55.8],[30.5,54.5],[29.0,52.0],[27.5,49.5],[30.5,47.0]],"confidence":"reconstruction","note_he":"קו סכמטי ברזולוציה אזורית.","source_ids":["atlas_method"]},
+    {"id":"front-stalingrad-1942","name_he":"החזית המזרחית — סתיו 1942","as_of":"1942-11-01","valid_from":"1942-09-01","valid_to":"1943-02-15","path":[[29.5,60.0],[35.0,56.0],[39.0,53.0],[42.0,50.0],[44.5,48.7],[39.5,46.0],[37.0,44.5]],"confidence":"reconstruction","note_he":"שחזור אזורי; אינו קו חזית יומי.","source_ids":["atlas_method"]},
+    {"id":"front-normandy-1944","name_he":"ראש הגשר בנורמנדי","as_of":"1944-06-20","valid_from":"1944-06-06","valid_to":"1944-08-25","path":[[-1.7,49.65],[-1.1,49.3],[-0.4,49.2],[0.3,49.4],[0.7,49.2]],"confidence":"primary_map","note_he":"מצב ייצוגי בתוך חלון שמכוסה במפות מצב יומיות; לא כל 416 המפות דוגטלו עדיין.","source_ids":["loc_situation"]},
+    {"id":"front-bulge-1944","name_he":"קרב הבליטה","as_of":"1944-12-23","valid_from":"1944-12-16","valid_to":"1945-01-25","path":[[6.2,50.4],[5.9,50.2],[5.4,50.1],[5.7,49.9],[6.2,49.8]],"confidence":"primary_map","note_he":"קו ייצוגי המבוסס על אוסף מפות המצב של ספריית הקונגרס.","source_ids":["loc_situation"]},
+    {"id":"front-rhine-1945","name_he":"חציית הריין","as_of":"1945-03-28","valid_from":"1945-03-01","valid_to":"1945-04-10","path":[[6.7,52.0],[6.3,51.2],[7.1,50.6],[7.6,49.5],[7.6,48.7]],"confidence":"primary_map","note_he":"שחזור ייצוגי מתוך אוסף מפות המצב.","source_ids":["loc_situation"]},
+    {"id":"front-germany-1945","name_he":"החזיתות בגרמניה — אפריל 1945","as_of":"1945-04-20","valid_from":"1945-04-11","valid_to":"1945-05-08","path":[[12.0,54.0],[12.8,52.5],[12.0,51.0],[11.5,49.5],[12.5,48.0]],"confidence":"primary_map","note_he":"קו מערבי ייצוגי; החזית הסובייטית מוצגת בנפרד בהקשר הקרבות.","source_ids":["loc_situation"]}
+  ],
+  "fortifications": [
+    {"id":"maginot","name_he":"קו מז׳ינו","active_from":"1937-01-01","active_to":"1940-06-25","path":[[6.2,49.5],[6.8,49.1],[7.3,48.7],[7.6,48.2]],"kind":"fortified_line","derivation":"algorithmic","source_ids":["atlas_method"]},
+    {"id":"siegfried","name_he":"קו זיגפריד","active_from":"1939-09-01","active_to":"1945-03-15","path":[[6.1,50.8],[6.2,50.1],[6.5,49.4],[7.2,48.8]],"kind":"fortified_line","derivation":"algorithmic","source_ids":["atlas_method"]},
+    {"id":"atlantic-wall","name_he":"החומה האטלנטית","active_from":"1942-03-01","active_to":"1944-09-01","path":[[-1.8,49.7],[-0.4,49.4],[1.4,50.2],[2.0,51.0],[3.5,51.4],[4.4,52.2]],"kind":"coastal_defense","derivation":"algorithmic","source_ids":["atlas_method"]},
+    {"id":"mannerheim","name_he":"קו מנרהיים","active_from":"1939-11-30","active_to":"1940-03-13","path":[[28.2,60.3],[29.0,60.5],[30.0,60.7]],"kind":"fortified_line","derivation":"algorithmic","source_ids":["atlas_method"]},
+    {"id":"kursk-defenses","name_he":"מערכי ההגנה בקורסק","active_from":"1943-04-01","active_to":"1943-08-23","path":[[34.5,52.0],[35.4,51.6],[36.2,51.0],[36.5,50.4]],"kind":"field_defenses","derivation":"algorithmic","source_ids":["atlas_method"]}
+  ],
+  "aid_operations": [
+    {"id":"kurtulus","name_he":"ה־SS Kurtuluş — סיוע ליוון","name_en":"SS Kurtuluş relief voyages","agency":"Turkish Red Crescent","aid_type":"food","active_from":"1941-10-13","active_to":"1942-02-20","path":[[28.98,41.01],[26.0,39.5],[23.65,37.94]],"volume_he":"משלוחי מזון תחת הקלות מצור; הכיסוי כאן מייצג את המסלול.","negotiated_status":"blockade_exemption","source_ids":["icrc_archives","atlas_method"]},
+    {"id":"white-ships","name_he":"האניות הלבנות השוודיות ליוון","name_en":"Swedish White Ships to Greece","agency":"Swedish Red Cross","aid_type":"food","active_from":"1942-09-01","active_to":"1944-03-31","path":[[11.97,57.70],[8.0,50.0],[-5.3,36.1],[14.5,35.9],[23.65,37.94]],"volume_he":"שיירות סיוע תחת מעבר בטוח מוסכם; מסדרון מייצג.","negotiated_status":"safe_conduct_agreed","source_ids":["icrc_archives","atlas_method"]},
+    {"id":"icrc-pow","name_he":"חבילות הצלב האדום לשבויי מלחמה","name_en":"ICRC POW parcels","agency":"ICRC","aid_type":"POW_parcels","active_from":"1939-09-01","active_to":"1945-05-08","path":[[6.14,46.20],[8.54,47.37],[11.58,48.14],[13.40,52.52]],"volume_he":"המחשה של רשת הפצה; לא כל משלוח פרטני.","negotiated_status":"safe_conduct_agreed","source_ids":["icrc_archives"]},
+    {"id":"unrra-europe","name_he":"UNRRA — אספקה ושיקום באירופה","name_en":"UNRRA European relief","agency":"UNRRA","aid_type":"rehabilitation","active_from":"1944-11-01","active_to":"1946-12-31","path":[[-74.0,40.7],[-20.0,45.0],[2.35,48.86],[13.40,52.52],[21.01,52.23]],"volume_he":"מסדרון המחשה לפעילות אספקה ושיקום לאחר שחרור אזורים.","negotiated_status":"allied_relief","source_ids":["un_unrra"]},
+    {"id":"unrra-china","name_he":"UNRRA — סיוע לסין","name_en":"UNRRA relief to China","agency":"UNRRA","aid_type":"food_medical","active_from":"1945-08-01","active_to":"1946-12-31","path":[[-122.33,47.61],[-157.9,21.3],[121.5,31.2],[116.4,39.9]],"volume_he":"מסדרון בין־לאומי מייצג; פריטי ארכיון מתועדים בנפרד.","negotiated_status":"allied_relief","source_ids":["un_unrra"]}
+  ],
+  "famines": [
+    {"id":"greece-famine","name_he":"הרעב הגדול ביוון","active_from":"1941-09-01","active_to":"1942-08-31","polygon":[[19.3,34.7],[28.3,34.7],[28.3,41.7],[19.3,41.7]],"severity":"extreme","context_he":"מצוקת מזון תחת כיבוש ומצור; הפוליגון הוא תחום ארצי כללי ולא מפת תמותה מקומית.","source_ids":["icrc_archives","atlas_method"]},
+    {"id":"leningrad-hunger","name_he":"רעב במצור לנינגרד","active_from":"1941-09-08","active_to":"1944-01-27","polygon":[[29.5,59.5],[31.0,59.5],[31.0,60.3],[29.5,60.3]],"severity":"extreme","context_he":"מצוקת מזון בעיר הנצורה; מוצגת בהקשר נתיב דרך החיים.","source_ids":["atlas_method"]},
+    {"id":"bengal-famine","name_he":"רעב בנגל","active_from":"1943-01-01","active_to":"1944-12-31","polygon":[[86.5,21.5],[90.8,21.5],[90.8,26.8],[86.5,26.8]],"severity":"extreme","context_he":"תחום ייצוגי של בנגל; אין להסיק אחידות מקומית מן הפוליגון.","source_ids":["atlas_method"]},
+    {"id":"hunger-winter","name_he":"חורף הרעב בהולנד","active_from":"1944-09-01","active_to":"1945-05-05","polygon":[[3.3,51.7],[5.6,51.7],[5.6,53.4],[3.3,53.4]],"severity":"severe","context_he":"מצוקת מזון במערב הולנד; הפוליגון סכמטי.","source_ids":["atlas_method"]}
+  ],
+  "refugee_flows": [
+    {"id":"poland-east-1939","name_he":"פליטים מפולין מזרחה","active_from":"1939-09-01","active_to":"1940-06-30","path":[[21.01,52.23],[24.03,49.84],[27.56,53.90]],"context_he":"זרימה אזורית מייצגת; אינה סופרת בני אדם כיחידות נעות.","source_ids":["atlas_method"]},
+    {"id":"lisbon-route","name_he":"נתיב הצלה דרך ליסבון","active_from":"1940-06-01","active_to":"1942-12-31","path":[[2.35,48.86],[-1.0,45.0],[-9.14,38.72],[-40.0,40.0],[-74.0,40.7]],"context_he":"מסדרון בריחה והגירה מייצג דרך פורטוגל הנייטרלית.","source_ids":["atlas_method"]},
+    {"id":"shanghai-refuge","name_he":"נתיב פליטים לשנחאי","active_from":"1938-01-01","active_to":"1941-12-07","path":[[13.40,52.52],[21.01,52.23],[30.31,59.94],[92.87,56.01],[121.47,31.23]],"context_he":"מסדרון ייצוגי; דרכי ההגעה בפועל היו מגוונות.","source_ids":["atlas_method"]},
+    {"id":"tehran-children","name_he":"ילדי טהרן","active_from":"1942-01-01","active_to":"1943-02-18","path":[[24.03,49.84],[31.2,43.2],[51.39,35.69],[34.78,32.08]],"context_he":"מסלול ייצוגי של פליטים פולנים דרך ברית המועצות ואיראן.","source_ids":["atlas_method"]},
+    {"id":"unrra-repatriation","name_he":"החזרת עקורים בחסות UNRRA","active_from":"1945-05-08","active_to":"1946-12-31","path":[[13.40,52.52],[16.37,48.21],[19.94,50.06],[21.01,52.23]],"context_he":"רשת החזרה ושיקום אזורית מייצגת; אינה נתיב יחיד.","source_ids":["un_unrra"]}
+  ],
+  "demographics": [
+    {
+      "id":"demo-warsaw",
+      "place_id":"warsaw",
+      "name_he":"ורשה",
+      "name_en":"Warsaw",
+      "position":[21.01,52.23],
+      "records":[
+        {"as_of":"1939-01-01","kind":"religion/community","label_he":"לפני המלחמה","breakdown":[{"category_he":"יהודים","share":30},{"category_he":"אחרים","share":70}],"confidence":"official_estimate","note_he":"USHMM מציין למעלה מ־350,000 יהודים — כ־30% מאוכלוסיית העיר לפני המלחמה."},
+        {"as_of":"1946-12-31","kind":"not_comparable","label_he":"אחרי המלחמה","breakdown":[],"confidence":"pending_validation","note_he":"נתון השוואתי עירוני מאומת טרם הושלם. הממשק אינו ממציא ערך כדי לסגור את התרשים."}
+      ],
+      "source_ids":["ushmm_ghettos"]
+    },
+    {
+      "id":"demo-lviv",
+      "place_id":"lviv",
+      "name_he":"לבוב / לביב / למברג",
+      "name_en":"Lwów / Lviv / Lemberg",
+      "aliases":["לבוב","לביב","למברג","Lwów","Lviv","Lemberg","Львів"],
+      "position":[24.03,49.84],
+      "records":[
+        {"as_of":"1931-12-09","kind":"mother_tongue_and_religion","label_he":"מפקד 1931","breakdown":[],"confidence":"pending_ocr","note_he":"מפקד פולין 1931 מדד שפת אם ודת, לא לאום. ערכי הפילוח מחכים ל־OCR ואימות כפול."},
+        {"as_of":"1946-12-31","kind":"not_comparable","label_he":"אחרי המלחמה","breakdown":[],"confidence":"pending_validation","note_he":"אין להשוות קטגוריות בין מפקדים שונים בלי התאמה מתודולוגית."}
+      ],
+      "source_ids":["atlas_method"]
+    },
+    {
+      "id":"demo-thessaloniki",
+      "place_id":"thessaloniki",
+      "name_he":"סלוניקי",
+      "name_en":"Thessaloniki",
+      "aliases":["Thessaloniki","Salonika","סלוניקה"],
+      "position":[22.94,40.64],
+      "records":[
+        {"as_of":"1940-01-01","kind":"community_estimate","label_he":"לפני הכיבוש","breakdown":[],"confidence":"pending_validation","note_he":"שלד הרשומה פעיל; מספרי הקהילה לא יוצגו עד אימות מקור פרטני."},
+        {"as_of":"1946-12-31","kind":"not_comparable","label_he":"אחרי המלחמה","breakdown":[],"confidence":"pending_validation","note_he":"הכיסוי הדמוגרפי העירוני הוא עדיין החלק החסר ביותר במיזם."}
+      ],
+      "source_ids":["atlas_method"]
+    }
+  ],
+  "supply_context": [
+    {"battle_id":"moscow","route_ids":["rail-warsaw-minsk","rail-minsk-smolensk","rail-smolensk-moscow"],"supply_lag_km":970,"rail_gauge_break":true,"bottleneck_note_he":"שינוי רוחב מסילה, העמסה מחדש ומרחק גדל מבסיסי האספקה.","derivation":"algorithmic"},
+    {"battle_id":"leningrad","route_ids":["ROAD_OF_LIFE"],"supply_lag_km":42,"rail_gauge_break":false,"bottleneck_note_he":"העיר נשענה על נתיב עונתי ופגיע מעל אגם לדוגה.","derivation":"algorithmic"},
+    {"battle_id":"stalingrad","route_ids":["rail-kharkiv-stalingrad","STALINGRAD_AIRLIFT"],"supply_lag_km":650,"rail_gauge_break":true,"bottleneck_note_he":"המרחק, המסילות הפגועות וכשל הרכבת האווירית הגבילו את האספקה.","derivation":"algorithmic"},
+    {"battle_id":"normandy","route_ids":["HX","RED_BALL","PLUTO"],"supply_lag_km":210,"rail_gauge_break":false,"bottleneck_note_he":"הפריצה המהירה הקדימה את שיקום הנמלים והמסילות; משאיות וצינורות מילאו את הפער.","derivation":"algorithmic"},
+    {"battle_id":"india-burma","route_ids":["THE_HUMP","LEDO_ROAD","BURMA_ROAD"],"supply_lag_km":1100,"rail_gauge_break":false,"bottleneck_note_he":"הרים, מונסון וניתוק דרך בורמה העבירו את מרכז הכובד לאוויר ולדרך לדו.","derivation":"algorithmic"},
+    {"battle_id":"battle-of-the-bulge","route_ids":["RED_BALL","PLUTO"],"supply_lag_km":390,"rail_gauge_break":false,"bottleneck_note_he":"נמלי פריקה, דלק ומרחקי הובלה עיצבו את קצב התגובה של בעלות הברית.","derivation":"algorithmic"}
+  ],
+  "tour": [
+    {"id":"tour-1","title_he":"1939 — מלחמה על רשת קיימת","body_he":"התחילו בגבולות ובמסילות: המלחמה משנה את השליטה, אבל האספקה נעה על תשתית שנבנתה קודם.","date":"1939-09-17","view":{"longitude":18,"latitude":52,"zoom":4.0},"layers":["historical-borders","railways","fronts"]},
+    {"id":"tour-2","title_he":"1940 — קווי הגנה אינם רשת אספקה","body_he":"קו מז׳ינו והחזית בצרפת מראים את ההבדל בין ביצורים קבועים לבין תנועה מבצעית.","date":"1940-05-15","view":{"longitude":6,"latitude":49,"zoom":5.0},"layers":["fortifications","battles","fronts"]},
+    {"id":"tour-3","title_he":"1941 — המצור על לנינגרד","body_he":"פתחו את דרך החיים כדי לראות כיצד נתיב קצר ופגיע הפך לציר קיום של עיר שלמה.","date":"1941-12-15","view":{"longitude":30.3,"latitude":60.0,"zoom":5.2},"layers":["supply-corridors","famines","battles"]},
+    {"id":"tour-4","title_he":"1942 — פער האוויר באטלנטי","body_he":"שיירות והטבעות מתרכזות באזור שבו כיסוי אווירי רציף עדיין חסר.","date":"1942-06-04","view":{"longitude":-34,"latitude":52,"zoom":3.1},"layers":["convoy-routes","naval-losses","air-gap"]},
+    {"id":"tour-5","title_he":"1942 — רשת הגירוש","body_he":"הטרנספורטים מוצגים כקווים סטטיים על מסילות משוחזרות, ללא אנימציה של בני אדם.","date":"1942-08-15","view":{"longitude":20,"latitude":51,"zoom":5.0},"layers":["railways","camps","transports"]},
+    {"id":"tour-6","title_he":"1942 — סטלינגרד והאספקה","body_he":"מצב ״מדוע״ קושר את הקרב למסילה ולרכבת האווירית שנכשלה לעמוד בדרישה.","date":"1942-12-15","view":{"longitude":42,"latitude":49,"zoom":4.3},"layers":["battles","supply-corridors","railways"]},
+    {"id":"tour-7","title_he":"1943 — מסדרונות לסין","body_he":"דרך בורמה נותקה, הרכבת האווירית מעל ההימלאיה נשאה את העומס, ודרך לדו נבנתה כחלופה.","date":"1943-12-15","view":{"longitude":98,"latitude":26,"zoom":4.1},"layers":["supply-corridors","convoy-routes","battles"]},
+    {"id":"tour-8","title_he":"1944 — נורמנדי והרד בול","body_he":"החזית נעה מהר יותר משיקום הנמלים והמסילות; משאיות וצינור PLUTO קיצרו את הפער.","date":"1944-09-01","view":{"longitude":2,"latitude":49,"zoom":4.5},"layers":["fronts","supply-corridors","battles"]},
+    {"id":"tour-9","title_he":"1944 — קרב הבליטה","body_he":"חלון הזמן עובר אוטומטית לרזולוציה יומית, וקו החזית מסומן כייצוג המבוסס על מפות מצב.","date":"1944-12-23","view":{"longitude":5.8,"latitude":50.1,"zoom":6.0},"layers":["fronts","battles","fortifications"]},
+    {"id":"tour-10","title_he":"1945–1946 — עקורים ושיקום","body_he":"לאחר הקרבות, אותם נמלים ומסילות שירתו החזרת עקורים וחלוקת סיוע של UNRRA.","date":"1945-10-01","view":{"longitude":15,"latitude":50,"zoom":3.8},"layers":["aid-operations","refugees","railways"]}
+  ]
+}

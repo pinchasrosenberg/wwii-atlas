@@ -1,0 +1,211 @@
+# מרשם מקורות הנתונים.
+#
+# כל מקור חייב רישום כאן לפני שקוד קליטה ניגש אליו. השדה `license` אינו
+# דקורטיבי — `validate/rules.py` בודק שכל ישות בפלט מקושרת למקור שהרישוי שלו
+# מתיר את השימוש המתוכנן.
+#
+# access:
+#   open       — הורדה ישירה מותרת
+#   attributed — מותר בציון קרדיט
+#   permission — דורש אישור בכתב לפני שימוש (חסום עד שיתקבל)
+#   manual     — אין הורדה אוטומטית; הזנה/דיגיטציה ידנית
+
+sources:
+
+  # ── גבולות ושליטה טריטוריאלית ──────────────────────────────────────────
+  cshapes:
+    name: "CShapes 2.0 (ETH Zurich)"
+    url: "https://icr.ethz.ch/data/cshapes/"
+    layers: [L10]
+    format: shapefile
+    access: attributed
+    license: "CC BY-NC-SA 4.0"
+    refresh: yearly
+    notes: "גבולות מדינות 1886–2019. בסיס לשכבת השליטה הטריטוריאלית."
+
+  stanford_new_order:
+    name: "Stanford — Building the New Order 1938–1945"
+    url: "https://web.stanford.edu/group/spatialhistory/static/publications/pub51.html"
+    download: "http://www.stanford.edu/group/spatialhistory/Publications/HolocaustGeographies/EuropeanBorders_WWII.zip"
+    layers: [L10, L11]
+    format: shapefile
+    access: attributed
+    license: "חינוכי לא-מסחרי בציון קרדיט"
+    refresh: never
+    notes: |
+      רזולוציה חודשית מפברואר 1938. מסתיים בפועל בספטמבר 1944 —
+      אין נתוני חזית לאוקטובר 1944 – מאי 1945. קישור ההורדה ידוע כשביר;
+      ייתכן שיידרש שחזור מ-Internet Archive.
+
+  loc_situation_maps:
+    name: "Library of Congress — WWII Military Situation Maps"
+    url: "https://www.loc.gov/collections/world-war-ii-maps-military-situation-maps-from-1944-to-1945/about-this-collection/"
+    layers: [L11]
+    format: scanned_raster
+    access: open
+    license: "נחלת הכלל (ממשל ארה\"ב)"
+    refresh: never
+    notes: "רזולוציה יומית 6.6.1944–26.7.1945. מזין את חלונות הרזולוציה הגבוהה במערב."
+
+  # ── מלחמת הים ──────────────────────────────────────────────────────────
+  uboat_net:
+    name: "uboat.net"
+    url: "https://uboat.net/"
+    endpoints:
+      convoy_routes: "https://uboat.net/ops/convoys/routes.php"
+      merchant_losses: "https://uboat.net/allies/merchants/"
+    layers: [L1, L2, L3]
+    format: html
+    access: permission          # ← חסום עד קבלת אישור
+    license: "זכויות שמורות — נדרשת פנייה"
+    refresh: quarterly
+    notes: "אין לגרד לפני קבלת אישור בכתב. ראו R2 באפיון."
+
+  hague_convoys:
+    name: "Arnold Hague Convoy Database"
+    url: "https://www.convoyweb.org.uk/hague/index.html"
+    layers: [L1]
+    format: html
+    access: permission
+    license: "שימוש אישי/מחקרי — נדרשת פנייה לשימוש נרחב"
+    refresh: yearly
+
+  nhhc_uboat_casualties:
+    name: "Naval History and Heritage Command — U-Boat Casualties"
+    url: "https://www.history.navy.mil/research/library/online-reading-room/title-list-alphabetically/u/united-states-submarine-losses/german-u-boat-casualties-in-world-war-two.html"
+    layers: [L3]
+    format: html
+    access: open
+    license: "נחלת הכלל (ממשל ארה\"ב)"
+    refresh: yearly
+    notes: "כולל קואורדינטות הטבעה — מקור פתוח ואמין לשכבת הצוללות."
+
+  # ── מחנות ורדיפה ───────────────────────────────────────────────────────
+  ushmm_camps:
+    name: "USHMM — Encyclopedia of Camps and Ghettos (מפה)"
+    url: "https://muse.jhu.edu/ushmm/map"
+    layers: [L14]
+    format: json
+    access: permission
+    license: "שימוש מחקרי — נדרש אישור לפרסום מחדש"
+    refresh: yearly
+    notes: "עשרות אלפי אתרים עם קואורדינטות. ההיררכיה parent/subcamp קריטית לאגרגציה."
+
+  hgc_ss_camps:
+    name: "Holocaust Geographies Collaborative — SS Camp Dataset"
+    url: "https://holocaustgeographies.org/ss-camp-data"
+    download: "https://holocaustgeographies.org/sites/default/files/2020-09/SSCampDataset.zip"
+    layers: [L14]
+    format: shapefile
+    access: attributed
+    license: "אקדמי בציון קרדיט"
+    refresh: never
+    notes: "מחנות ריכוז ועבודה של ה-SS 1933–1945, עם מטא-דאטה מלאה."
+
+  yad_vashem_transports:
+    name: "יד ושם — רכבות אל האבדון"
+    url: "https://www.yadvashem.org/deportations"
+    layers: [L16]
+    format: html
+    access: permission
+    license: "נדרש שיתוף פעולה מוסדי — אין API ציבורי"
+    refresh: manual
+    notes: |
+      חסום לגרידה אוטומטית. יש לפנות רשמית למחלקת המחקר ביום הראשון
+      של הפרויקט. אם לא יתקבל מענה — תוכנית חלופה R3: הזנה ידנית של
+      200–300 טרנספורטים מרכזיים, עם סימון מפורש שהכיסוי חלקי.
+
+  # ── תשתיות ─────────────────────────────────────────────────────────────
+  ohm_rail:
+    name: "OpenHistoricalMap — רשת מסילות"
+    url: "https://www.openhistoricalmap.org/"
+    api: "https://api.openhistoricalmap.org/api/0.6/map"
+    layers: [L6]
+    format: osm_xml
+    access: open
+    license: "CC0 ברוב המסד; חובה לבדוק license=* לכל ישות"
+    refresh: monthly
+    notes: "מסנן תאריך מחזיר את מצב הרשת בשנה נתונה. בסיס גרף המסילות."
+
+  osm_fortifications:
+    name: "OpenStreetMap — ביצורים ובונקרים"
+    url: "https://www.openstreetmap.org/"
+    layers: [L13]
+    format: osm_xml
+    access: open
+    license: "ODbL"
+    refresh: quarterly
+
+  # ── דמוגרפיה ואבדות ────────────────────────────────────────────────────
+  polish_census_1931:
+    name: "מפקד פולין 1931"
+    url: "https://100latgus.stat.gov.pl/historia-gus/spisy-ludnosci"
+    layers: [L15]
+    format: scanned_tables
+    access: manual
+    license: "יש לאמת זכויות ברמת הפריט בספריית GUS"
+    refresh: never
+    notes: |
+      מדד שפת אם ודת — לא לאום. השדה `kind` חייב להישמר ולהופיע בממשק.
+      דורש OCR ואימות ידני. פריט הסיכון הגדול בפרויקט (R1).
+
+  cow_war:
+    name: "Correlates of War — Inter-State War Data"
+    url: "https://correlatesofwar.org/data-sets/cow-war/"
+    layers: [L12]
+    format: csv
+    access: open
+    license: "חינם לשימוש אקדמי"
+    refresh: yearly
+
+  # ── סיוע הומניטרי ──────────────────────────────────────────────────────
+  un_archives_unrra:
+    name: "UN Archives — UNRRA"
+    url: "https://archives.un.org/en/content/wwii-refugees"
+    layers: [L7, L9]
+    format: scanned_documents
+    access: attributed
+    license: "שימוש מחקרי בציון קרדיט"
+    refresh: never
+    notes: "לא מובנה. רוב העבודה היא חילוץ ידני מדוחות סרוקים."
+
+  # ── מקורות רוחב רשמיים ────────────────────────────────────────────────
+  us_army_cmh_logistics:
+    name: "U.S. Army Center of Military History — WWII Logistics"
+    url: "https://history.army.mil/"
+    layers: [L4, L5, L8, L12]
+    format: pdf
+    access: open
+    license: "נחלת הכלל (ממשל ארה\"ב)"
+    refresh: never
+    notes: "טבלאות תפוקה, נתיבי Red Ball, המסדרון הפרסי וגשרים אוויריים."
+
+  nara_wwii_records:
+    name: "U.S. National Archives — WWII Records"
+    url: "https://www.archives.gov/research"
+    layers: [L1, L2, L4, L5, L7, L8, L9, L12]
+    format: mixed_archive
+    access: manual
+    license: "רוב חומרי הממשל בנחלת הכלל; בדיקת זכויות ברמת פריט"
+    refresh: never
+    notes: "מקור ראשוני רחב, לא dataset אחיד. קליטה רק מפריטים מזוהים."
+
+  ehri_portal:
+    name: "EHRI Portal API"
+    url: "https://documentation.ehri-project.eu/en/latest/technical/frontend/api_v1.html"
+    layers: [L14, L16]
+    format: json
+    access: permission
+    license: "token והרשאות ברמת הרשומה"
+    refresh: quarterly
+    notes: "API ניסויי לגילוי תיאורים ארכיוניים; אינו מקור אירוע עצמאי."
+
+  icrc_archives:
+    name: "ICRC Archives"
+    url: "https://www.icrc.org/en/icrc-archives"
+    layers: [L7, L9]
+    format: archive_catalog
+    access: manual
+    license: "גישה, פרטיות וזכויות ברמת התיק"
+    refresh: never
+    notes: "אין לקלוט מידע אישי. הארכיון הכללי פתוח למחקר בתיאום."

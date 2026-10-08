@@ -1,0 +1,12 @@
+.DS_Store
+node_modules/
+dist/
+__pycache__/
+*.pyc
+.venv/
+.wrangler/
+.dev.vars
+# graph snapshots are loaded into the hosted graph, never committed
+snapshot/
+*.jsonl
+etl/work/

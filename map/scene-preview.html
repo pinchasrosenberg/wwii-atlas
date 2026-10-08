@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>תצוגת שכבת הסצנה — החזית המערבית</title>
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';
+  img-src 'self' data: blob:; connect-src 'self' data:; worker-src 'self' blob:;">
+<link rel="stylesheet" href="./vendor/maplibre-gl.css">
+<style>
+  :root { color-scheme: dark; }
+  html, body { margin: 0; height: 100%; background: #14161a;
+    font: 14px/1.5 -apple-system, "Segoe UI", system-ui, sans-serif; color: #e8e4dc; }
+  #map { position: absolute; inset: 0; }
+  .panel { position: absolute; top: 16px; inset-inline-start: 16px; z-index: 5;
+    width: 330px; background: rgba(18,20,24,.93); border: 1px solid #3a3f47;
+    border-radius: 10px; padding: 14px 16px; backdrop-filter: blur(6px); }
+  .panel h1 { margin: 0 0 2px; font-size: 15px; }
+  .panel .sub { color: #9a958c; font-size: 12px; margin-bottom: 10px; }
+  .date { font-size: 26px; font-weight: 700; letter-spacing: .5px; margin: 6px 0 2px; }
+  .tag { display: inline-block; font-size: 11px; padding: 2px 7px; border-radius: 999px;
+    border: 1px solid currentColor; }
+  .tag.exact { color: #7fbf7f; }
+  .tag.recon { color: #e0a05c; }
+  .row { display: flex; gap: 8px; align-items: center; margin-top: 12px; }
+  button { background: #2a2f36; color: #e8e4dc; border: 1px solid #454b54;
+    border-radius: 6px; padding: 6px 12px; font-size: 13px; cursor: pointer; }
+  button:hover { background: #343a42; }
+  input[type=range] { flex: 1; }
+  .note { margin-top: 12px; font-size: 11.5px; color: #9a958c; border-top: 1px solid #333;
+    padding-top: 10px; }
+  .note b { color: #c8c2b6; font-weight: 600; }
+  .warn { margin-top: 8px; font-size: 11.5px; color: #d9a06a; }
+  .tip { position: absolute; z-index: 6; pointer-events: none; background: rgba(18,20,24,.95);
+    border: 1px solid #454b54; border-radius: 5px; padding: 4px 8px; font-size: 12px;
+    display: none; white-space: nowrap; }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div id="tip" class="tip"></div>
+<div class="panel">
+  <h1>שכבת הסצנה — החזית המערבית</h1>
+  <div class="sub">נתונים אמיתיים מהגרף, נבנו דרך קוד השרת</div>
+  <div class="date" id="date">—</div>
+  <div><span class="tag" id="basis">—</span></div>
+  <div class="row">
+    <button id="play">⏸ עצור</button>
+    <input type="range" id="slider" min="0" max="1000" value="0">
+  </div>
+  <div class="note" id="note"></div>
+  <div class="warn" id="warn"></div>
+</div>
+<script type="module" src="./vendor/maplibre-global.mjs"></script>
+<script src="./vendor/deck.gl.min.js"></script>
+<script type="module" src="./src/ui/scene-preview.js"></script>
+</body>
+</html>
