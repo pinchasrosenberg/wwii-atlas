@@ -71,7 +71,7 @@ the map still boots on its static layers. The graph itself contains only curated
 ## Highlights
 
 * **Engine and content are separate.** `map/src/core` knows nothing about WWII. Swap `config.js` and `layers/` and
-  you get a different atlas on the same engine (the companion [roman-atlas](https://github.com/pinchasrosenberg/roman-atlas)
+  you get a different atlas on the same engine (the companion [roman-atlas-route](https://github.com/pinchasrosenberg/roman-atlas-route)
   explores the same idea).
 * **Time as an integer.** Days since the epoch, so it can go straight into GPU shaders. The timeline slows down
   automatically inside high-resolution windows (Poland 1939, Barbarossa, Normandy, the Bulge, …) and shows an
@@ -113,7 +113,7 @@ included.
 
 * [**wwii-build-manager**](https://github.com/pinchasrosenberg/wwii-build-manager) is the deterministic multi-agent
   orchestrator used to build this project. It reads this graph as its RAG source.
-* [**roman-atlas**](https://github.com/pinchasrosenberg/roman-atlas) is a temporal atlas of the Roman Empire.
+* [**roman-atlas-route**](https://github.com/pinchasrosenberg/roman-atlas-route) is a temporal atlas of the Roman Empire.
 
 ## License
 
