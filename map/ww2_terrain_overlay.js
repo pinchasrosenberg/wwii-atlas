@@ -498,7 +498,7 @@
  // ── state & UI ──
  const modes = [['normal', 'רגיל'], ['topo', 'טופוגרפי'], ['real', 'לוויין'], ['photo', 'צילום אוויר']];
  const state = {
-  mode: store.get('ww2.terrain.mode', 'normal'),
+  mode: store.get('ww2.terrain.mode', 'topo'),     // default view: topographic relief with live snow cover
   relief: store.get('ww2.terrain.relief', '1') === '1',
   rivers: store.get('ww2.terrain.rivers', '1') === '1',
   wet: null, veg: null, snow: null, dem: null, occ: null
