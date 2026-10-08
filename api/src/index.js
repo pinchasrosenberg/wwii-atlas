@@ -53,7 +53,7 @@ export default {
     }
   },
 
-  // Weekly cron (wrangler.toml): a trivial read keeps the free hosted graph from pausing.
+  // Daily cron (wrangler.toml): a trivial read keeps the free hosted graph from pausing.
   async scheduled(_event, env, ctx) {
     ctx.waitUntil(run(env, 'RETURN 1 AS ok'));
   },

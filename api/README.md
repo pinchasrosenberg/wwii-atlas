@@ -35,7 +35,7 @@ this Worker over HTTPS. The Worker talks to Neo4j through its Query API, with cr
   returns a generic 500, and unknown routes return 404.
 * **Headers:** CORS limited to `ALLOWED_ORIGINS` (with `Vary: Origin`), `Content-Security-Policy: default-src 'none';
   frame-ancestors 'none'`, `nosniff`, `no-referrer` and HSTS.
-* A weekly cron does one trivial read so the free hosted graph is not paused for inactivity.
+* A daily cron does one trivial read so the free hosted graph is not paused for inactivity.
 
 Generate the console key with `openssl rand -hex 32`.
 

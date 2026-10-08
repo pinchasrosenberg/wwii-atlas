@@ -17,6 +17,6 @@ name = "RATE_LIMITER"
 namespace_id = "1001"
 simple = { limit = 60, period = 60 }
 
-# Weekly keep-alive so the free hosted graph is not paused for inactivity.
+# Daily keep-alive: the free hosted graph is paused after 3 days without queries.
 [triggers]
-crons = ["17 6 * * 1"]
+crons = ["17 6 * * *"]
