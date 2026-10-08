@@ -329,7 +329,7 @@
     if (lv) { mask[r * cols + q] = lv; wet++; for (let k = 0; k < lv * lv; k++) act.push(r * cols + q); }   // heavier rain → more drops
    }
    this._mask = { mask, cols, rows, CELL, act };
-   const want = Math.min(1100, Math.round(act.length * .9));
+   const want = Math.min(650, Math.round(act.length * .55));
    this._p = [];
    while (act.length && this._p.length < want) this._p.push(this._spawn(true));
    if (act.length && !reduceMotion) this._start(); else this._clear();
@@ -350,7 +350,7 @@
    const SLANT = .22;                                                // a little wind: streaks lean to the left as they fall
    for (const pass of [0, 1]) {                                      // light casing first, then the blue streaks
     ctx.beginPath();
-    ctx.strokeStyle = pass ? 'rgba(38,84,150,.62)' : 'rgba(255,255,255,.45)'; ctx.lineWidth = pass ? 1.15 : 2.6;
+    ctx.strokeStyle = pass ? 'rgba(38,84,150,.42)' : 'rgba(255,255,255,.3)'; ctx.lineWidth = pass ? 1 : 2.2;
     for (let i = 0; i < this._p.length; i++) {
      const p = this._p[i];
      if (!pass) {

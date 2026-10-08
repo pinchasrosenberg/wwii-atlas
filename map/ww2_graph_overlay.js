@@ -121,17 +121,9 @@ function updateTroops(day){troopLayer.clearLayers();if(!showTroops)return;
     `<br>מיקום יומי מחושב בין עוגנים, לא נצפה ישירות.`).addTo(troopLayer);
  }}
 
-// New observations augment, but never overwrite or sum incompatible battle scopes.
-for(const {b,m} of BAT){const e=G.battles[b.id];if(!e)continue;
- const obs=(label,arr)=>{if(!arr?.length)return'';
-  const rows=arr.slice(0,3).map(o=>`${range(o.lo??0,o.hi??o.lo??0)}`+
-    ` (${esc(o.from||'?')}–${esc(o.to||'?')}; ${esc((o.sources||[]).join(', '))})`);
-  return `<br><b>${label} — תצפיות חדשות בגרף:</b> ${rows.join(' · ')}`+
-   (arr.length>3?` · ועוד ${arr.length-3}`:'');};
- const extra=obs('כוח אדם',e.manpower)+obs('אבדות',e.losses);
- if(extra)m.getPopup().setContent(m.getPopup().getContent()+`<hr>`+extra+
-  `<br><small>הטווחים עשויים לתאר צדדים או תתי־יחידות שונים; אין לסכום אותם.</small>`);
-}
+// The graph's manpower/loss observations are bare numbers: the source does not say which side, unit or kind of
+// loss each one counts (Hamburg: 10, 150, 152,000 …). Shown on a card they read as nonsense, so they stay in the
+// graph for querying and are not added to the battle card. The card keeps its own labelled casualty estimate.
 
 function querySupply({from,to,commodity='',origin='',destination='',plantId='',battleId=''}){
  const a=dayOf(from),b=dayOf(to);if(!Number.isFinite(a)||!Number.isFinite(b)||a>b)

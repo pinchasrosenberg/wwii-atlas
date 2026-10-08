@@ -62,6 +62,8 @@
  #legend .grpH span{font-size:9px;opacity:.6}
  #legend .grp+.grp{border-top:1px solid var(--line)}
  #legend hr{border:none;border-top:1px solid var(--line);margin:7px 0}
+ #viewNote{font-size:11.5px;line-height:1.5;white-space:normal;max-width:300px;padding:2px 2px 7px;
+  margin-bottom:4px;border-bottom:1px solid var(--line);color:var(--ink-soft)}
  .dot{display:inline-block;width:10px;height:10px;border-radius:50%;
   margin-inline-start:5px;vertical-align:-1px;box-shadow:0 0 0 1px rgba(0,0,0,.18)}
  .rl{display:inline-block;width:15px;height:0;margin-inline-start:5px;
@@ -182,7 +184,7 @@
 </div>
 <div id="feed" class="panel"><h2>אירועים בתקופה</h2><div id="feedList"></div></div>
 <div id="views" class="panel">
- <button data-v="all" class="on">הכול</button><button data-v="occupation">הכיבוש</button><button data-v="front">החזית</button>
+ <button data-v="overview" class="on">סקירה</button><button data-v="all">הכול</button><button data-v="occupation">הכיבוש</button><button data-v="front">החזית</button>
  <button data-v="air">מלחמה אווירית</button><button data-v="industry">תעשייה ואספקה</button><button data-v="persecution">הרדיפה</button>
  <button data-v="sea">הים</button>
 </div>
@@ -257,6 +259,7 @@ const EPOCH=Date.UTC(1937,0,1),MS=864e5;
 const day2date=d=>new Date(EPOCH+d*MS);
 const heMonth=d=>day2date(d).toLocaleDateString("he-IL",{year:"numeric",month:"long"});
 const heDay=d=>day2date(d).toLocaleDateString("he-IL",{year:"numeric",month:"short",day:"numeric"});
+const heYear=d=>day2date(d).getFullYear();
 const f=n=>n==null?"—":Number(n).toLocaleString("en");
 // worldCopyJump יוצר עותקים של העולם בגרירה, ובזום נמוך אמריקה
 // מופיעה פעמיים. noWrap + maxBounds נועלים את המפה לעולם יחיד.
@@ -1651,7 +1654,11 @@ const BAT=D.bat.map(b=>{
  if(b.ff>0)h+=`<br>${b.fk==="free"?"השטח שוחרר":"השטח נפל"} כאן: ${heDay(b.ff)}`+
    (b.dff!=null?` <span style="color:#8a7050">(${b.dff>0?"+":""}${b.dff} ימים מהקרב)</span>`:"");
  if(b.rk!=null)h+=`<br>מרחק למסילה: ${b.rk} ק״מ`;
- if(b.rt&&b.rt.length)h+=`<br>נתיבי אספקה פעילים: ${b.rt.join(", ")}`;
+ {const RT_HE={sl:"שיירות SL (פריטאון ← בריטניה)",hg_og:"שיירות גיברלטר (HG/OG)",hx:"שיירות HX (הליפקס ← בריטניה)",
+  sc:"שיירות SC (נובה סקוטיה ← בריטניה)",ob:"שיירות OB (בריטניה ← אמריקה)",jw:"השיירות הארקטיות JW",pq:"השיירות הארקטיות PQ",
+  malta:"שיירות מלטה",pacific_ll:"נתיב ההשאלה־החכרה באוקיינוס השקט"};
+  const rts=(b.rt||[]).map(r=>RT_HE[String(r).replace(/^route:/,"")]).filter(Boolean);
+  if(rts.length)h+=`<br>נתיבי אספקה ימיים פעילים: ${rts.join(", ")}`;}
  if(b.sk)h+=`<br>הטבעות סמוכות (±60 יום): ${b.sk}`;
  m.bindPopup(h);return{b,m,on:false};});
 
@@ -1725,6 +1732,17 @@ M.forEach(({p})=>{if(p.t==="ghetto"&&p.e&&p.dmax>0&&p.e>=608&&p.e<=3166)
  for(let t=Math.max(608,p.e-3);t<=Math.min(3166,p.e+3);t++)density[t]+=1.5;});
 D.air.forEach(a=>{if(a.d>=608&&a.d<=3166)density[a.d]+=Math.min(a.t/500,.8);});
 
+// ── תרגום ערכים גולמיים מהמקורות (סיבות הטבעה, חילות אוויר) ──
+const CAUSE_HE={torpedo:"טורפדו",air_attack:"תקיפה אווירית",aircraft:"תקיפה אווירית",mine:"מוקש",gunfire:"ירי ארטילרי",
+ scuttled:"הוטבעה בידי צוותה",depth_charge:"פצצות עומק",grounding:"עלתה על שרטון",collision:"התנגשות",rammed:"נגיחה",
+ foundered:"שקעה בסערה",wrecked:"נטרפה",capsized:"התהפכה",fire:"שריפה"};
+const causeHe=c=>CAUSE_HE[c]||c;
+const AIRF_HE={"GREAT BRITAIN":"חיל האוויר הבריטי","USA":"חיל האוויר האמריקאי","AUSTRALIA":"חיל האוויר האוסטרלי",
+ "NEW ZEALAND":"חיל האוויר הניו־זילנדי","SOUTH AFRICA":"חיל האוויר הדרום־אפריקאי"};
+const airForceHe=s3=>String(s3||"").split("/").map(x=>AIRF_HE[x.trim()]||x).join(" ו");
+// THOR: m = מספר רשומות המשימה, ac = מטוסים שתקפו, t = טון פצצות
+const raidLine=a=>(a.ac?`${f(a.ac)} מטוסים`:`${a.m} משימות`)+` · ${f(a.t)} טון פצצות`;
+
 // ── פיד אירועים ──
 const feedList=document.getElementById("feedList");
 function tag(txt,color){return `<span class="tag" style="background:${color}">${txt}</span>`;}
@@ -1733,8 +1751,8 @@ function buildFeed(day){
  if(showBat)BAT.forEach(({b})=>{if(b.f!=null&&day>=b.f&&day<=(b.e||b.f)+4)
   {const t=(b.oob||[]).reduce((a,o)=>a+(o.tanks||0),0);
    const u=(b.oob||[]).reduce((a,o)=>a+(o.strength||0),0);
-   items.push({d:b.f,y:b.y,x:b.x,h:tag("קרב","#7b241c")+`<b>${b.n}</b><br>`+
-    `${b.bl?b.bl.slice(0,3).join(", "):""}${b.cas?" · ~"+f(b.cas)+" אבדות":""}`+
+   items.push({d:b.f,y:b.y,x:b.x,ref:b,h:tag("קרב","#7b241c")+`<b>${b.n}</b>`+
+    [b.bl&&b.bl.length?b.bl.slice(0,3).join(", "):"",b.cas?"~"+f(b.cas)+" אבדות":""].filter(Boolean).map((x,i)=>(i?" · ":"<br>")+x).join("")+
     (t?`<br><b style="color:#8a4620">🛡 ${f(t)} טנקים</b>`:"")+
     (u?` · ${f(u)} חיילים`:"")+
     ((KIDS[b.n]||[]).length?` · ${KIDS[b.n].length} תתי-קרבות`:"")});}});
@@ -1745,18 +1763,19 @@ function buildFeed(day){
  D.tr.forEach(t=>{if(day>=t.d&&day<=t.d+8){const c0=t.c[0];
   items.push({d:t.d,y:c0[1],x:c0[0],h:tag("טרנספורט","#154360")+`<b>${t.id}</b> · רכבת על המסילה`});}});
  if(showSink)D.sea.sink.forEach(k=>{if(k.d!=null&&day>=k.d&&day<=k.d+6)
-  items.push({d:k.d,y:k.y,x:k.x,h:tag("הטבעה","#0b2d45")+`<b>${k.n||"אנייה"}</b>${k.cv?" · שיירה "+k.cv:""}${k.c?"<br>"+k.c:""}`});});
+  items.push({d:k.d,y:k.y,x:k.x,h:tag("הטבעה","#0b2d45")+`<b>${k.n||"אנייה"}</b>${k.cv?" · שיירה "+k.cv:""}${k.c?"<br>סיבה: "+causeHe(k.c):""}`});});
  // סדרי כוחות: אין להם מיקום, ולכן אין קפיצה במפה — רק תוכן
  // ⚠️ 257 כרטיסי סד"כ באנגלית בפיד הצידי — "הקפיצות פה בצד לא עוזרים
  // לי" בלשון המשתמש, ובצדק: הם תיארו כוחות בלי לומר לאיזה קרב, ובשפה
  // שאינה שפת האטלס. הנתונים עברו לפופאפ של הקרב, שם יש להם הקשר.
  if(showAir)for(let t=day-4;t<=day;t++)(AIR_BY_DAY[t]||[]).forEach(a=>{if(a.t>=150)
-  items.push({d:a.d,y:a.y,x:a.x,h:tag("הפצצה","#b7950b")+`<b>${a.n||"פשיטה"}</b><br>${a.m} גיחות · ${f(a.t)} טון${a.f?" · "+a.f:""}`});});
+  items.push({d:a.d,y:a.y,x:a.x,h:tag("הפצצה","#b7950b")+`<b>${a.n||"פשיטה"}</b><br>${raidLine(a)}${a.f?" · "+airForceHe(a.f):""}`});});
  items.sort((a,b)=>b.d-a.d);
  feedList.innerHTML="";
  items.slice(0,14).forEach(it=>{const el=document.createElement("div");el.className="ev";
   el.innerHTML=it.h+`<div style="color:#8a7050;font-size:10.5px">${heDay(it.d)}</div>`;
-  if(!it.nozoom)el.onclick=()=>{map.setView([it.y,it.x],7);};
+  if(it.ref&&window.WW2Explore)el.onclick=()=>WW2Explore.openBattle(it.ref);
+  else if(!it.nozoom)el.onclick=()=>{map.setView([it.y,it.x],7);};
   else el.style.cursor="default";
   feedList.appendChild(el);});
  if(!items.length)feedList.innerHTML='<div style="color:#8a7050">אין אירועים מתועדים בתקופה זו</div>';}
@@ -1831,7 +1850,7 @@ function drawPlanes(day){
    if(Math.abs(mk._ang-ang)>8||mk._big!==(c.m>=15)){
     mk.setIcon(planeIcon(ang,c.m>=15));mk._ang=ang;mk._big=c.m>=15;}}
   mk.bindPopup(`<b>✈ ${c.b||"בסיס"} ← ${c.tg||"מטרה"}</b><br>${heMonth(c.d)}<br>`+
-   `${c.m} גיחות · ${f(c.t)} טון`);
+   `${c.m} משימות · ${f(c.t)} טון פצצות`);
   if(!mk._shown){mk.addTo(planeFx);mk._shown=true;}}}
 function startPlanes(){
  if(planeTimer)clearInterval(planeTimer);
@@ -1967,7 +1986,7 @@ function tick(day){
   // הציור עצמו על הקנבס (ForceLayer). זה רק אזור לחיצה שקוף.
   L.circleMarker([a.y,a.x],{radius:r0,color:"#7d6608",weight:0,
    fillColor:"#f1c40f",fillOpacity:.01,opacity:0})
-   .bindPopup(`<b>הפצצה: ${a.n||"מטרה"}</b><br>${heDay(a.d)}<br>${a.m} גיחות · ${f(a.t)} טון פצצות${a.ac?"<br>"+f(a.ac)+" מטוסים":""}${a.f?"<br>כוח: "+a.f:""}`)
+   .bindPopup(`<b>הפצצה: ${a.n||"מטרה"}</b><br>${heDay(a.d)}<br>${f(a.t)} טון פצצות${a.ac?"<br>"+f(a.ac)+" מטוסים":""}<br>${a.m} משימות הפצצה${a.f?"<br>"+airForceHe(a.f):""}`)
    .addTo(airFx);});
  // הטבעות
  sinkFx.clearLayers();
@@ -1975,7 +1994,7 @@ function tick(day){
   const ph=dt/45;
   L.circleMarker([k.y,k.x],{radius:4+ph*3,color:"#0b2d45",weight:1,fillColor:"#12405f",
    fillOpacity:.7*(1-ph),opacity:.8*(1-ph)})
-   .bindPopup(`<b>${k.n||"אנייה"}</b><br>הוטבעה ${heDay(k.d)}${k.c?"<br>סיבה: "+k.c:""}${k.a?"<br>תוקף: "+k.a:""}${k.cv?"<br>שיירה: "+k.cv:""}${k.t?"<br>"+f(k.t)+" GRT":""}${k.cl?"<br>אבדו "+f(k.cl)+" אנשי צוות":""}${k.cg?"<br>מטען: "+k.cg:""}`).addTo(sinkFx);});
+   .bindPopup(`<b>${k.n||"אנייה"}</b><br>הוטבעה ${heDay(k.d)}${k.c?"<br>סיבה: "+causeHe(k.c):""}${k.a?"<br>תוקף: "+k.a:""}${k.cv?"<br>שיירה: "+k.cv:""}${k.t?"<br>תפוסה: "+f(k.t)+" טון ברוטו (GRT)":""}${k.cl?"<br>אבדו "+f(k.cl)+" אנשי צוות":""}${k.cg?"<br>מטען: "+k.cg:""}`).addTo(sinkFx);});
  buildFeed(day);
  document.dispatchEvent(new CustomEvent("ww2:daychange",{detail:{day}}));}
 function paintTrack(){
@@ -2001,6 +2020,7 @@ playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?"⏸":"▶";
 
 // ── מקרא ──
 const lg=document.getElementById("legend");
+lg.insertAdjacentHTML("afterbegin",'<div id="viewNote" aria-live="polite"></div>');
 // ליקוי ד1: מקרא בן 17 שורות. קיבוץ לקטגוריות מתקפלות.
 function group(title){
  const d2=document.createElement("div");
@@ -2011,41 +2031,43 @@ function group(title){
   body.style.display=open?"none":"";head.querySelector("span").textContent=open?"▸":"▾";};
  lg.appendChild(d2);return body;}
 let _lgBox=null;
-function row(html,fn,off){const r=document.createElement("div");r.className="row"+(off?" off":"");
- r.innerHTML=html;r.onclick=()=>{r.classList.toggle("off");fn();};
+function row(html,fn,off,isOn){const r=document.createElement("div");r.className="row"+(off?" off":"");
+ r.innerHTML=html;r._isOn=isOn;r.onclick=()=>{r.classList.toggle("off");fn();if(isOn)r.classList.toggle("off",!isOn());};
  (_lgBox||lg).appendChild(r);}
+function syncLegend(){document.querySelectorAll("#legend .row").forEach(r=>{if(!r._isOn)return;
+ const on=!!r._isOn();r.classList.toggle("off",!on);r.setAttribute("aria-checked",String(on));});}
 _lgBox=group("לחימה");
 Object.entries(T).forEach(([t,s])=>row(
  `<span class="dot" style="background:${s.c}"></span> ${s.he} <b>(${f(CNT[t]||0)})</b>`,
- ()=>{map.hasLayer(G[t])?map.removeLayer(G[t]):G[t].addTo(map);},false));
+ ()=>{map.hasLayer(G[t])?map.removeLayer(G[t]):G[t].addTo(map);},false,()=>map.hasLayer(G[t])));
 row(`<span class="dot" style="background:#a85a25"></span> קרבות <b>(${f(D.bat.length)})</b>`,
- ()=>{showBat=!showBat;tick(+slider.value);},false);
+ ()=>{showBat=!showBat;tick(+slider.value);},false,()=>showBat);
 _lgBox=group("תשתית");
 row(`<span class="dot" style="background:#1f4e79"></span> תצורות בתנועה <b>(${f(FTRK.length)})</b>`,
- ()=>{showFtrk=!showFtrk;drawFtrk(+slider.value);},false);
-row("<span class='rl'></span> רשת מסילות",()=>{map.hasLayer(rail)?map.removeLayer(rail):rail.addTo(map);},false);
+ ()=>{showFtrk=!showFtrk;drawFtrk(+slider.value);},false,()=>showFtrk);
+row("<span class='rl'></span> רשת מסילות",()=>{map.hasLayer(rail)?map.removeLayer(rail):rail.addTo(map);},false,()=>map.hasLayer(rail));
 row(`<span class="dot" style="background:#c87d3a"></span> צמתי מסילה שהופצצו <b>(${f(INTD.length)})</b>`,
- ()=>{showIntd=!showIntd;drawIntd(+slider.value);},false);
-row("<span class='sq' style='background:#1a5276'></span> נתיבי שיירות",()=>{map.hasLayer(sea)?map.removeLayer(sea):sea.addTo(map);},false);
-row("<span class='sq' style='background:#12405f;border-radius:50%'></span> הטבעות",()=>{showSink=!showSink;tick(+slider.value);},false);
+ ()=>{showIntd=!showIntd;drawIntd(+slider.value);},false,()=>showIntd);
+row("<span class='sq' style='background:#1a5276'></span> נתיבי שיירות",()=>{map.hasLayer(sea)?map.removeLayer(sea):sea.addTo(map);},false,()=>map.hasLayer(sea));
+row("<span class='sq' style='background:#12405f;border-radius:50%'></span> הטבעות",()=>{showSink=!showSink;tick(+slider.value);},false,()=>showSink);
 _lgBox=group("רדיפה");
-row("<span class='sq' style='background:#4a235a'></span> רכבות גירוש",()=>{showDeport=!showDeport;tick(+slider.value);},false);
+row("<span class='sq' style='background:#4a235a'></span> רכבות גירוש",()=>{showDeport=!showDeport;tick(+slider.value);},false,()=>showDeport);
 _lgBox=group("אוויר וים");
 if(D.air.length)row(`<span class='dot' style='background:#f1c40f'></span> הפצצות אוויריות <b>(${f(D.air.length)})</b>`,
- ()=>{showAir=!showAir;tick(+slider.value);},false);
+ ()=>{showAir=!showAir;tick(+slider.value);},false,()=>showAir);
 if(D.cor.length)row(`<span class='sq' style='background:#2874a6;height:2px'></span> מסדרונות טיסה <b>(${f(D.cor.length)})</b>`,
- ()=>{showCor=!showCor;forceLayer.draw();},false);
+ ()=>{showCor=!showCor;forceLayer.draw();},false,()=>showCor);
 if(D.cor.length)row("✈ מטוסים בדרך למטרה",
- ()=>{showPlanes=!showPlanes;forceLayer.draw();},false);
-row("➤ חצי התקפה <b>(50)</b>",()=>{showArrows=!showArrows;forceLayer.draw();},false);
+ ()=>{showPlanes=!showPlanes;forceLayer.draw();},false,()=>showPlanes);
+row("➤ חצי התקפה <b>(50)</b>",()=>{showArrows=!showArrows;forceLayer.draw();},false,()=>showArrows);
 row("🛥️ פלישות והצנחות מתועדות",
- ()=>{showUnits=!showUnits;drawLandings(+slider.value);},false);
+ ()=>{showUnits=!showUnits;drawLandings(+slider.value);},false,()=>showUnits);
 if((D.bases||[]).length)row(`<span class='dot' style='background:#5dade2'></span> בסיסי חיל אוויר <b>(${f(D.bases.length)})</b>`,
- ()=>{map.hasLayer(baseLayer)?map.removeLayer(baseLayer):baseLayer.addTo(map);},true);
+ ()=>{map.hasLayer(baseLayer)?map.removeLayer(baseLayer):baseLayer.addTo(map);},true,()=>map.hasLayer(baseLayer));
 if((D.ports||[]).length)row(`⚓ נמלים <b>(${f(D.ports.length)})</b>`,
- ()=>{map.hasLayer(portLayer)?map.removeLayer(portLayer):portLayer.addTo(map);},true);
+ ()=>{map.hasLayer(portLayer)?map.removeLayer(portLayer):portLayer.addTo(map);},true,()=>map.hasLayer(portLayer));
 if((D.sply||[]).length)row(`<span class='dot' style='background:#12806a'></span> אספקה — פריקת נמלים <b>(${f(D.sply.length)})</b> <i style="color:#8a7050">long tons/יום</i>`,
- ()=>{map.hasLayer(supplyLayer)?map.removeLayer(supplyLayer):supplyLayer.addTo(map);},true);
+ ()=>{map.hasLayer(supplyLayer)?map.removeLayer(supplyLayer):supplyLayer.addTo(map);},true,()=>map.hasLayer(supplyLayer));
 if((D.plants||[]).length){
  const nAx=D.plants.filter(p=>p.side!=="allied").length;
  const extraFactories=window.WW2_FACTORY_CATALOG?.plants||[];
@@ -2055,29 +2077,29 @@ if((D.plants||[]).length){
   `<b>(${f(D.plants.length+extraFactories.length)})</b> <i style="color:#8a7050">`+
   `${f(extraFactories.length-jpCount)} סובייטיים · ${f(jpCount)} יפניים · ${f(D.plants.length)} אחרים</i>`,
   ()=>{if(map.hasLayer(plantLayer))map.removeLayer(plantLayer);
-       else{drawPlants();plantLayer.addTo(map);}},true);
+       else{drawPlants();plantLayer.addTo(map);}},true,()=>map.hasLayer(plantLayer));
  const nb=((D.plink&&D.plink.bomb)||[]).length,
        nl=((D.plink&&D.plink.labor)||[]).length;
  row(`<span class='sq' style='background:#6b4a2e;height:2px'></span> קשרי מפעלים `+
   `<i style="color:#8a7050">${f(nb)} הופצצו · ${f(nl)} עבודת כפייה</i>`,
   ()=>{if(map.hasLayer(plantArcs))map.removeLayer(plantArcs);
-       else{drawPlantArcs();plantArcs.addTo(map);}},false);}
+       else{drawPlantArcs();plantArcs.addTo(map);}},false,()=>map.hasLayer(plantArcs));}
 _lgBox=group("שליטה ורקע");
 if(FG)row(`<span class='sq' style='background:rgba(176,95,44,.75)'></span> חזית — התקדמות יומית <b>(${f(FG.cx.length)} תאים)</b>`,
  ()=>{frontOn=!frontOn;frontOn?frontLayer.addTo(map):map.removeLayer(frontLayer);
-      if(frontOn)frontLayer.draw();},false);
+      if(frontOn)frontLayer.draw();},false,()=>frontOn);
 if(TERR_PERIODS.length)row(`<span class='dot' style='background:#b56d5f'></span> שליטה בפועל <b>(${TERR_PERIODS.length} חודשים)</b>`,
- ()=>{map.hasLayer(terrLayer)?map.removeLayer(terrLayer):terrLayer.addTo(map);},false);
+ ()=>{map.hasLayer(terrLayer)?map.removeLayer(terrLayer):terrLayer.addTo(map);},false,()=>map.hasLayer(terrLayer));
 ["pacific","middle_east","europe"].forEach(rg=>{if(!DCTL[rg]||!DCTL[rg].periods||!DCTL[rg].periods.length)return;
  row(`<span class='dot' style='background:${DCTL_COLOR.allies};opacity:.75'></span>`+
   `<span class='dot' style='background:${DCTL_COLOR.axis};opacity:.75'></span> `+
   `שליטה — ${DCTL_HE[rg]} <i style="color:#8a7050">(משוער)</i>`,
   ()=>{const on=map.hasLayer(dctlLayer[rg]);
    on?map.removeLayer(dctlLayer[rg]):dctlLayer[rg].addTo(map);
-   dctlIdx[rg]=-2; updateDerived(+slider.value);}, rg==="europe");});
+   dctlIdx[rg]=-2; updateDerived(+slider.value);}, rg==="europe",()=>map.hasLayer(dctlLayer[rg]));});
 row("<span class='dot' style='background:#efe7d4'></span> גבולות (CShapes)",
- ()=>{map.hasLayer(borderLayer)?map.removeLayer(borderLayer):borderLayer.addTo(map);},false);
-row("<span class='dot' style='background:#bbb'></span> אתרים ללא תאריך",()=>{showUndated=!showUndated;tick(+slider.value);},true);
+ ()=>{map.hasLayer(borderLayer)?map.removeLayer(borderLayer):borderLayer.addTo(map);},false,()=>map.hasLayer(borderLayer));
+row("<span class='dot' style='background:#bbb'></span> אתרים ללא תאריך",()=>{showUndated=!showUndated;tick(+slider.value);},true,()=>showUndated);
 if((D.cities||[]).length)row(`<span class='dot' style='background:#a93226'></span> ערים <b>(${f(D.cities.length)})</b>`,
  ()=>{showCities=!showCities;drawCities(+slider.value);},false);
 row("❄ עונות ומזג אוויר",()=>{showSeason=!showSeason;curSeason=null;drawSeason(+slider.value);},false);
@@ -2187,8 +2209,8 @@ forceLayer.addTo(map);
 // ולפי הכלה, עם תמיכה בעברית ובלטינית במקביל.
 const SEARCH=[];
 (D.cities||[]).forEach(c=>SEARCH.push({n:c.n,t:"עיר",y:c.y,x:c.x,z:9}));
-D.bat.forEach(b=>SEARCH.push({n:b.n,t:"קרב",y:b.y,x:b.x,z:8,en:b.en}));
-D.pts.forEach(p=>SEARCH.push({n:p.n,t:T[p.t]?T[p.t].he:"אתר",y:p.y,x:p.x,z:10}));
+D.bat.forEach(b=>SEARCH.push({n:b.n,t:"קרב"+(b.f!=null?" · "+heYear(b.f):""),y:b.y,x:b.x,z:8,en:b.en,battle:b}));
+D.pts.forEach(p=>SEARCH.push({n:p.n,t:T[p.t]?T[p.t].he:"אתר",y:p.y,x:p.x,z:10,site:p}));
 (window.WW2_FACTORY_CATALOG?.plants||[]).forEach(p=>SEARCH.push({n:p.n,t:p.c==='Japan'?"מספנה יפנית":"מפעל סובייטי",y:p.y,x:p.x,z:8,factoryId:p.id,en:p.city}));
 const qIn=document.getElementById("q"),qRes=document.getElementById("qres");
 let qSel=-1,qList=[];
@@ -2209,7 +2231,10 @@ function runSearch(){
   d2.textContent=it.n;const kind=document.createElement('small');kind.textContent=it.t;d2.appendChild(kind);
   d2.onclick=()=>{openSearchItem(it);};
   qRes.appendChild(d2);});}
-function openSearchItem(it){map.setView([it.y,it.x],it.z);qRes.innerHTML="";qIn.value="";
+function openSearchItem(it){qRes.innerHTML="";qIn.value="";
+ // קרב או אתר: המפה עוברת גם למקום וגם לזמן (ראו ww2_explore.js)
+ if(window.WW2Explore&&(it.battle||it.site||it.factoryId)){WW2Explore.openSearch(it);return;}
+ map.setView([it.y,it.x],it.z);
  if(it.factoryId)window.WW2BattleSupply?.showFactory?.(it.factoryId);}
 qIn.addEventListener("input",runSearch);
 qIn.addEventListener("keydown",e=>{
@@ -2252,21 +2277,24 @@ const CORE=["front","cities","battles","camps","labels","polity","terr",
             "intd","ftrk"];
 const VIEWS_EXTRA=["intd","ftrk"];
 const VIEWS={
+ // מבט הפתיחה: רק החזית, השליטה בשטח, הקרבות והשמות — נקודת כניסה רגועה
+ overview  :{on:["front","terr","cities","battles","labels","polity"],
+   he:"סקירה",what:"קווי החזית, השליטה בשטח והקרבות הפעילים"},
  all       :{on:["front","cities","battles","camps","rail","air","cor","planes",
-   "bases","ports","sply","plants","sea","sink","deport","units","arrows","terr","labels","polity"],
-   dim:[]},
- occupation:{on:["front","terr","cities","battles","labels","polity"],
+   "bases","ports","sply","plants","sea","sink","deport","units","arrows","terr","labels","polity","intd","ftrk","borders"],
+   dim:[],he:"הכול",what:"כל השכבות יחד"},
+ occupation:{he:"הכיבוש",what:"מי שלט בכל שטח, קו החזית והערים — בלי הקרבות",on:["front","terr","cities","labels","polity","borders"],
    dim:["rail","air","cor","planes","bases","ports","sea","sink"]},
- front     :{on:["front","units","arrows","battles","labels","polity","terr"],
+ front     :{he:"החזית",what:"החזית, הקרבות, הכוחות וחצי ההתקפה",on:["front","units","arrows","battles","labels","polity","terr","ftrk","cities"],
    dim:["rail","air","cor","planes","bases","ports","sea","sink","deport"]},
- air       :{on:["air","cor","planes","bases","cities","labels","polity"],
+ air       :{he:"מלחמה אווירית",what:"ההפצצות, מסדרונות הטיסה, המטוסים והבסיסים",on:["air","cor","planes","bases","cities","labels","polity","intd","terr"],
    dim:["rail","units","arrows","deport","sea","sink","ports"]},
- persecution:{on:["camps","deport","rail","cities","labels","polity"],
+ persecution:{he:"הרדיפה",what:"המחנות, הגטאות ורכבות הגירוש",on:["camps","deport","rail","cities","labels","polity","terr"],
    dim:["air","cor","planes","bases","units","arrows","sea","sink","ports"]},
- sea       :{on:["sea","sink","ports","sply","cities","labels","polity"],
+ sea       :{he:"הים",what:"השיירות, ההטבעות, הנמלים והאספקה",on:["sea","sink","ports","sply","cities","labels","polity","terr"],
    dim:["rail","air","cor","planes","bases","units","arrows","deport"]},
  // מבט התעשייה: מפעלים, קשתותיהם, המסילות שהזינו אותם וההפצצות עליהם.
- industry  :{on:["plants","parcs","rail","air","sply","ports","labels","polity"],
+ industry  :{he:"תעשייה ואספקה",what:"המפעלים, הקשרים ביניהם, המסילות וההפצצות עליהם",on:["plants","parcs","rail","air","sply","ports","labels","polity","terr","intd"],
    dim:["cities","camps","units","arrows","deport","sea","sink","cor","planes"]}};
 // עמעום במקום כיבוי — השכבה נשארת קריאה, רק מפסיקה להתחרות
 
@@ -2302,16 +2330,27 @@ function setLayer(key,on){
     on?ftrkLayer.addTo(map):map.removeLayer(ftrkLayer);
     drawFtrk(+slider.value); break;
   case "polity": showPolity=on; labelLayer.draw(); break;}}
+// ⚠️ גרסה קודמת רק וידאה שהשכבות דלוקות ולא כיבתה דבר — ומכיוון שהכול
+// כבר היה דלוק, לחיצה על מבט לא שינתה כלום. עכשיו מבט מסנן באמת:
+// שכבות המבט דלוקות, השאר כבויות; ״הכול״ מחזיר הכול, והמקרא מראה
+// בדיוק מה דלוק, כך שאפשר להוסיף שכבה ידנית מעל כל מבט.
+const VIEW_KEYS=["front","cities","battles","camps","rail","air","cor","planes","bases","ports","sply",
+ "plants","parcs","sea","sink","deport","units","arrows","terr","labels","polity","intd","ftrk","borders"];
+let currentView="overview";
 function applyView(name){
  const v=VIEWS[name]; if(!v)return;
- // ⚠️ המבט אינו מכבה דבר. הוא רק מוודא שהשכבות הרלוונטיות דלוקות.
- // הגרסה הקודמת כיבתה — ולכן "פעם רואים את החזית ופעם הפצצות".
- CORE.forEach(k=>setLayer(k,true));
- v.on.forEach(k=>setLayer(k,true));
- document.querySelectorAll("#views button").forEach(b=>
-  b.classList.toggle("on",b.dataset.v===name));
+ currentView=name;
+ const on=new Set(v.on);
+ VIEW_KEYS.forEach(k=>guard(()=>setLayer(k,on.has(k))));
+ document.querySelectorAll("#views button").forEach(b=>{
+  b.classList.toggle("on",b.dataset.v===name);b.setAttribute("aria-pressed",String(b.dataset.v===name));});
+ const note=document.getElementById("viewNote");
+ if(note)note.innerHTML=name==="all"?"<b>מבט: הכול</b> · כל השכבות מוצגות.":
+  `<b>מבט: ${v.he}</b> · מוצגים ${v.what}. שאר השכבות כבויות — אפשר להדליק כל שורה במקרא, או ללחוץ ״הכול״.`;
  tick(+slider.value);
- if(typeof railDetail==="function")railDetail();}
+ syncLegend();
+ if(typeof railDetail==="function")railDetail();
+ document.dispatchEvent(new CustomEvent("ww2:view",{detail:{name,on}}));}
 document.querySelectorAll("#views button").forEach(b=>{
  b.onclick=()=>applyView(b.dataset.v);});
 
@@ -2352,22 +2391,23 @@ intdLayer.addTo(map); ftrkLayer.addTo(map);
 wireA11y();
 // נחשף לשכבת היחידות כדי שגם קרב חסר-order-of-battle לא יוצג ריק.
 window.WW2_TIMELINE_BATTLES=D.bat||[];
-// ברירת המחדל: הכול דלוק. מבט הוא בחירה של המשתמש, לא מסנן כפוי.
-applyView("all");
+// ברירת המחדל: מבט ״סקירה״ — מעט שכבות, קל להבין במה להתמקד.
+// ״הכול״ זמין בלחיצה אחת, ובחירת קרב בחיפוש מדליקה את מה שרלוונטי לו.
+applyView("overview");
 paintTrack();
 tick(+slider.value);
 setTimeout(startPlanes,1200);          // מתחילים אחרי שהמפה התייצבה
 </script>
 <script src="./ww2_timeline_bridge.js" defer></script>
-<script src="./ww2_graph_overlay.js?v=20260922-side" defer></script>
+<script src="./ww2_graph_overlay.js?v=20261008-nolabels" defer></script>
 <script src="./ww2_frontline_overlay.js?v=20260922-frontc" defer></script>
 <script src="./ww2_battle_supply_overlay.js?v=20260922-factory-b" defer></script>
 <script src="./ww2_factory_overlay.js?v=20260924-factory-c" defer></script>
 <script src="./ww2_military_data.js?v=20260924-military-c" defer></script>
 <script src="./ww2_battle_units.js?v=20260924-battle-units-e" defer></script>
-<script src="./ww2_military_overlay.js?v=20260924-military-o" defer></script>
+<script src="./ww2_military_overlay.js?v=20261008-groups" defer></script>
 <script src="./ww2_snow_cover.js?v=20260924-terrain-c" defer></script>
-<script src="./ww2_terrain_overlay.js?v=20261008-weather-touch" defer></script>
+<script src="./ww2_terrain_overlay.js?v=20261008-rain2" defer></script>
 <script src="./ww2_campaigns_overlay.js?v=20260924-fix" defer></script>
 <script src="./ww2_symbols_overlay.js?v=20260927-sym-b" defer></script>
 <script src="./ww2_pacific_control.js?v=20260925-pac-b" defer></script>
@@ -2379,7 +2419,8 @@ setTimeout(startPlanes,1200);          // מתחילים אחרי שהמפה ה�
 <script src="./ww2_world_wrap.js?v=20260925-wrap-e" defer></script>
 <script src="./ww2_theme_navy.js?v=20260927-b" defer></script>
 <script src="./ww2_nv_select.js?v=20260927-a" defer></script>
-<script src="./ww2_mobile.js?v=20261008-m1" defer></script>
+<script src="./ww2_mobile.js?v=20261008-m2" defer></script>
+<script src="./ww2_explore.js?v=20261008-x1" defer></script>
 <script>
 (()=>{const button=document.getElementById('mapTools'),menu=document.getElementById('mapToolsMenu');
  document.body.dataset.uiPanel='none';
@@ -2391,7 +2432,7 @@ setTimeout(startPlanes,1200);          // מתחילים אחרי שהמפה ה�
   document.body.dataset.uiPanel=document.body.dataset.uiPanel===name?'none':name;
   menu.classList.remove('open');button.setAttribute('aria-expanded','false');map.closePopup();
   window.WW2BattleSupply?.closeContext?.();};
- const inside='#mapTools,#mapToolsMenu,#search,#feed,#views,#legend,#timebar,#live-scene,#ww2Enrich,#militaryPanel,.leaflet-popup';
+ const inside='#mapTools,#mapToolsMenu,#search,#feed,#views,#legend,#timebar,#live-scene,#ww2Enrich,#militaryPanel,#storyBar,#welcome,.leaflet-popup';
  document.addEventListener('pointerdown',e=>{if(e.target.closest?.(inside))return;
   close();map.closePopup();window.WW2BattleSupply?.closeContext?.();},true);
  map.on('popupopen',close);
