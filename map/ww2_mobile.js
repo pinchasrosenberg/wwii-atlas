@@ -11,8 +11,7 @@
   if (!p.options.maxWidth || p.options.maxWidth > w) { p.options.maxWidth = w; changed = true; }
   if (p.options.minWidth > w) { p.options.minWidth = Math.min(200, w); changed = true; }
   if (!p.options.maxHeight || p.options.maxHeight > h) { p.options.maxHeight = h; changed = true; }
-  // re-measure only: update() would re-render the content and undo what the entity cards built into it
-  if (changed) { p._updateLayout(); p._updatePosition(); if (p._adjustPan) p._adjustPan(); }
+  if (changed) p.update();
   document.body.classList.add('ww2Popup');
  });
  map.on('popupclose', () => document.body.classList.remove('ww2Popup'));

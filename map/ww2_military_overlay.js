@@ -902,10 +902,7 @@
   if(state.syncAdvance)document.dispatchEvent(new CustomEvent('ww2:frontsyncchange'));});
  render(true);
  document.dispatchEvent(new CustomEvent('ww2:frontsyncchange'));
- // views (ww2_explore.js) switch these groups together with the timeline's own layers
- function setGroup(key,on){if(!(key in checks))return;checks[key].checked=on;state[key]=on;render(true);
-  if(key==='syncAdvance')document.dispatchEvent(new CustomEvent('ww2:frontsyncchange'));}
- window.WW2Military={data,battleData,state,render,movementTracks,setGroup,
+ window.WW2Military={data,battleData,state,render,movementTracks,
   hasActiveMovement,supportedFrontDay,surfaceAudit,
   surfaceRenderAudit:()=>({...lastRenderSurfaceAudit})};
 })();
